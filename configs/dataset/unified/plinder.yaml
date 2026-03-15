@@ -1,0 +1,60 @@
+# PLINDER Valid Dataset - Protein-Ligand Complexes
+# 91,917 validated protein-ligand complexes from PLINDER
+# Uses system.cif files with protein and ligand structures
+#
+# Pipeline:
+# PDB/CIF → AtomArray → atomarray_transforms → atom37 Data → atom37_transforms → model
+
+datamodule:
+  _target_: proteinfoundation.datasets.structure_data.StructureDataModule
+  metadata_file: ${oc.env:DATA_PATH}/latent_train_parquet_files/plinder_valid_dataset_local_test.csv
+  
+  batch_size: 8
+  num_workers: 8
+  id_column: example_id
+  path_column: path
+  filters: null
+  val_metadata_file: null
+  val_filters: null
+  pad_max_total_tokens: null #512  # null = dynamic (max in batch); int = cap total binder+target padding
+  pad_group_priority: ["target", "motif"]  # null=proportional, []=binder-first, ["target","motif"]=groups-first
+  
+  # Columns to load from metadata CSV
+  columns_to_load:
+    - example_id
+    - complex_name
+    - path
+    - num_residues_protein
+    - num_heavy_atoms_ligand
+  
+  # Use atomworks parse() for full processing (required for ligands)
+  use_parse: true
+  parser_args:
+    add_missing_atoms: true      # Add missing atoms for ligands
+    fix_formal_charges: true     # Fix charges for ligands
+    cache_dir: ${oc.env:CACHE_DIR}  # Critical for parse() performance
+    save_to_cache: true
+    load_from_cache: true
+    add_id_and_entity_annotations: true
+
+  # Two modes for AtomArray transforms (use one or the other):
+  # 1. Simple mode: atomarray_transforms - list of transforms applied sequentially
+  # 2. Pipeline mode: pipeline_target - function that builds a complete transform pipeline
+  atomarray_transforms: []  # Simple mode: list of individual transforms
+  pipeline_target: proteinfoundation.datasets.pipelines.complexa_ligand.build_protein_ligand_transform_pipeline  # Pipeline mode
+
+  # Atom37 transforms applied after atom37 conversion (both modes)
+  atom37_transforms:
+    # Extract ligand-specific features from atomworks pipeline output
+    - _target_: proteinfoundation.datasets.transforms.AtomworksLigandFeaturesTransform
+      remove_atomworks_data: true  # Clean up raw atomworks data after processing
+    - _target_: proteinfoundation.datasets.transforms.CoordsToNanometers
+    - _target_: proteinfoundation.datasets.transforms.GlobalRotationTransform
+    - _target_: proteinfoundation.datasets.transforms.ChainBreakPerResidueTransform
+    - _target_: proteinfoundation.datasets.transforms.CenteringTransform
+      center_mode: "target"
+      data_mode: "ligand_atom37" # we can do bb_ca due to universal ligand atom37
+    - _target_: proteinfoundation.datasets.transforms.ExtractTargetCoordinatesTransform
+      compact_mode: true
+    - _target_: proteinfoundation.datasets.transforms.FilterTargetResiduesTransform
+    - _target_: proteinfoundation.datasets.transforms.LigandAtom37SqueezeTransform

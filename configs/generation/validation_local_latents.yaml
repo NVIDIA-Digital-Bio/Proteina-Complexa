@@ -1,0 +1,128 @@
+defaults:
+  - base_gen_data
+  - _self_
+
+# General sampling params
+args:
+  # some params for sampling
+  nsteps: 200
+  self_cond: False
+  fold_cond: False
+  guidance_w: 1.0   # conditional model weights, 1.0 for conditional generation, 0.0 for unconditional generation. We typically set this value greater than 1
+  # Always set autoguidance as 0.0 during validation
+  ag_ratio: 0.0   # a value between 0 and 1, determining the proportion of autoguidance v.s. classifier-free guidance, 1.0 for all autoguidance, 0.0 for all CFG
+  ag_ckpt_path: null    # path to bad model checkpoint
+
+
+dataloader:
+  batch_size: 5
+  dataset:
+    nres: [50, 100]
+    nrepeat_per_sample: 20
+
+
+model:
+  ode:
+    bb_ca:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: vf
+        sc_scale_noise: 0.0
+        sc_scale_score: 0.0
+        t_lim_ode: 0.98
+        t_lim_ode_below: 0.02
+        center_every_step: True
+    local_latents:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: vf
+        sc_scale_noise: 0.0
+        sc_scale_score: 0.0
+        t_lim_ode: 0.98
+        t_lim_ode_below: 0.02
+        center_every_step: False
+  
+  temp_035_only_ca:
+    bb_ca:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: sc
+        sc_scale_noise: 0.35
+        sc_scale_score: 1.0
+        t_lim_ode: 0.98
+        t_lim_ode_below: 0.02
+        center_every_step: True
+    local_latents:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: vf
+        sc_scale_noise: 0.0
+        sc_scale_score: 0.0
+        t_lim_ode: 0.98
+        t_lim_ode_below: 0.02
+        center_every_step: False
+  
+  temp_035_all:
+    bb_ca:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: sc
+        sc_scale_noise: 0.35
+        sc_scale_score: 1.0
+        t_lim_ode: 0.98
+        t_lim_ode_below: 0.02
+        center_every_step: True
+    local_latents:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: sc
+        sc_scale_noise: 0.35
+        sc_scale_score: 1.0
+        t_lim_ode: 0.98
+        t_lim_ode_below: 0.02
+        center_every_step: False
+
+# Sampling metrics
+metric:
+  # Designability
+  compute_designability: False
+
+  # Novelty
+  compute_novelty_pdb: False
+  compute_novelty_afdb: False

@@ -1,0 +1,36 @@
+# TED Dimers with Ligand - Unified Pipeline Example
+# 
+# Pipeline:
+# PDB/CIF → AtomArray → atomarray_transforms → atom37 Data → atom37_transforms → model
+
+datamodule:
+  _target_: proteinfoundation.datasets.structure_data.StructureDataModule
+  metadata_file: ${oc.env:DATA_PATH}/ted_dimers/ted_dimers_with_ligands.parquet
+  base_dir: ""
+  
+  batch_size: 8
+  num_workers: 8
+  id_column: example_id
+  path_column: path
+  
+  # Use atomworks parse() for full processing
+  use_parse: true
+  parser_args:
+    add_missing_atoms: true
+    fix_formal_charges: true
+    cache_dir: ${oc.env:CACHE_DIR}
+    save_to_cache: true
+    load_from_cache: true
+    add_id_and_entity_annotations: true
+
+  # AtomArray transforms (atomworks-style transforms supported)
+  atomarray_transforms:
+    - _target_: atomworks.ml.transforms.filters.RemoveHydrogens
+    - _target_: atomworks.ml.transforms.atomize.FlagNonPolymersForAtomization
+    - _target_: atomworks.ml.transforms.atomize.AtomizeByCCDName
+      atomize_by_default: false
+      move_atomized_part_to_end: false
+      validate_atomize: false
+
+  # Atom37 transforms applied after conversion
+  atom37_transforms: []

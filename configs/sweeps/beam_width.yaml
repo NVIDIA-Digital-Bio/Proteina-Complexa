@@ -1,0 +1,7 @@
+# Sweep over beam search widths.
+# Generates one config per value (cartesian product with any other sweep axes).
+generation.search.beam_search.beam_width:
+  - 1
+  - 2
+  - 4
+  - 8

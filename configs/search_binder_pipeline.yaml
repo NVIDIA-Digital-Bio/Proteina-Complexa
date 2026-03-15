@@ -1,0 +1,47 @@
+# Binder Design Pipeline Configuration (SLURM)
+#
+# Modular config for SLURM cluster execution that combines all pipeline stages:
+#   - model_sampling: Model schedules, temperatures, noise
+#   - binder_generate: Search, rewards, filtering (SLURM-optimized)
+#   - binder_evaluate: Metrics computation
+#   - binder_analyze: Results analysis and aggregation
+#
+# Usage:
+#   # Via SLURM launch script:
+#   ./slurm_utils/launch_protein_binder_search_v2.sh [TARGET_TASK] [COUNT]
+#
+#   # Direct invocation (for testing):
+#   python -m proteinfoundation.generate --config-path configs --config-name search_binder_pipeline \
+#     ++generation.task_name=22_DerF21 ++run_name=test_run
+
+defaults:
+  - pipeline/binder/binder_generate_slurm@generation
+  - pipeline/binder/binder_evaluate_slurm@_global_
+  - pipeline/binder/binder_analyze_slurm@_global_
+  - _self_
+
+# =============================================================================
+# Run identification
+# =============================================================================
+run_name: TEST_SEARCH_REFACTOR
+
+# Checkpoint paths — override CKPT_PATH in .env or via CLI
+ckpt_path: ${oc.env:CKPT_PATH}
+ckpt_name: complexa.ckpt
+autoencoder_ckpt_path: ${oc.env:CKPT_PATH}/complexa_ae.ckpt
+
+# =============================================================================
+# Job management (SLURM-optimized)
+# =============================================================================
+ncpus_: 24
+seed: 5
+gen_njobs: 10
+eval_njobs: 10
+
+
+# =============================================================================
+# Hydra
+# =============================================================================
+hydra:
+  run:
+    dir: ./logs/hydra_outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}

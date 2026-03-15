@@ -1,0 +1,61 @@
+# AME (Motif + Ligand Binder) Analysis Configuration
+#
+# Pairs with ame_evaluate.yaml for motif_ligand_binder results.
+# motif_target_dict_cfg comes from generation config (via ame_generate).
+#
+# Analysis includes:
+#   - Joint binder + motif success filtering (ipAE, pLDDT, scRMSD, motif_rmsd, seq_recovery)
+#   - Per-task pass rates
+#   - Structural and sequence diversity on successful subsets
+
+result_type: motif_ligand_binder
+dryrun: false
+
+aggregation:
+  # Limit number of result files (null = all)
+  limit: null
+
+  # ---------------------------------------------------------------------------
+  # Analysis modes
+  # ---------------------------------------------------------------------------
+  # motif_binder: Joint binder + motif success filtering, per-task pass rates, diversity
+  analysis_modes: [motif_binder, monomer]
+
+  # ---------------------------------------------------------------------------
+  # Motif binder success thresholds
+  # ---------------------------------------------------------------------------
+  # null = use defaults for motif_ligand_binder:
+  #   i_pAE*31 <= 10.0, pLDDT >= 0.8, scRMSD < 2.0,
+  #   motif_rmsd_pred < 1.5, motif_seq_recovery >= 0.5
+  #
+  # Custom example:
+  # motif_binder_success_thresholds:
+  #   i_pAE:
+  #     threshold: 10.0
+  #     op: "<="
+  #     scale: 31.0
+  #     column_prefix: complex
+  #   pLDDT:
+  #     threshold: 0.8
+  #     op: ">="
+  #     scale: 1.0
+  #     column_prefix: complex
+  #   scRMSD:
+  #     threshold: 2.0
+  #     op: "<"
+  #     scale: 1.0
+  #     column_prefix: binder
+  #   motif_rmsd_pred:
+  #     threshold: 1.5
+  #     op: "<"
+  #     scale: 1.0
+  #   motif_seq_recovery:
+  #     threshold: 0.5
+  #     op: ">="
+  #     scale: 1.0
+
+  # ---------------------------------------------------------------------------
+  # Diversity
+  # ---------------------------------------------------------------------------
+  compute_diversity: true
+  compute_mmseqs_diversity: true

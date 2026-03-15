@@ -1,0 +1,55 @@
+name: local_latents_transformer  # name of architecture
+
+output_parameterization:
+  bb_ca: v  # or x_1
+  local_latents: v  # or x_1
+
+
+nlayers: 14  # number of transformer layers
+token_dim: 768  # dimension of the tokens in the sequence
+nheads: 12  # number of attn heads  12
+parallel_mha_transition: False  # whether to compute mha and transition as parallel and add them up (AF3 style) or sequentially (normal transofrmers)
+
+strict_feats: False  # if False, then fills missing features with default values (e.g. chain break with zero, residue sequence index by [0, 1, 2, ...], etc)
+# If True, if some feature is not provided, then it raises an error
+
+# feats_seq: ["res_seq_pdb_idx", "xt_bb_ca", "xt_local_latents", "x_sc_bb_ca", "x_sc_local_latents", "x_recycle_bb_ca", "x_recycle_local_latents"]  # Sequence features to include in initial representation
+feats_seq: ["xt_bb_ca", "xt_local_latents", "x_sc_bb_ca", "x_sc_local_latents", "optional_ca_coors_nm_seq_feat", "optional_res_type_seq_feat", "chain_break_per_res"] #, "res_seq_pdb_idx"]  # Sequence features to include in initial representation
+feats_cond_seq: ["time_emb_bb_ca", "time_emb_local_latents"]  # Sequence features to include in conditioning variables
+
+# Parameters for the features we extract
+dim_cond: 256  # dimension of conditioning vector
+idx_emb_dim: 256  # dimension of the sequence position [0, 1, 2, ...] (if contiguous residues) embeddings
+t_emb_dim: 256  # dimension of the time embedding
+
+# feats_pair_repr: ["rel_seq_sep", "xt_bb_ca_pair_dists", "x_sc_bb_ca_pair_dists", "optional_ca_pair_dist", "x_recycle_bb_ca_pair_dists"]  # Features to include in the pair representation
+feats_pair_repr: ["rel_seq_sep", "xt_bb_ca_pair_dists", "x_sc_bb_ca_pair_dists", "optional_ca_pair_dist"]  # Features to include in the pair representation
+feats_pair_cond: ["time_emb_bb_ca", "time_emb_local_latents"]  # Features to include in the pair representation conditioning
+
+concat_features:
+  enable_motif: true 
+  enable_target: true 
+  enable_ligand: false
+  motif_pair_features: true
+  target_pair_features: true 
+  ligand_pair_features: false
+
+# Parameters for the pair features we extract
+# Binning for the pair distances of noisy xt
+xt_pair_dist_dim: 30
+xt_pair_dist_min: 0.1  # in nm (not Å)
+xt_pair_dist_max: 3  # in nm (not Å)
+# Binning for the pair distances for self conditioning
+x_sc_pair_dist_dim: 30
+x_sc_pair_dist_min: 0.1  # in nm (not Å)
+x_sc_pair_dist_max: 3  # in nm (not Å)
+# Relative sequence separation
+seq_sep_dim: 127  # should be odd >= 5
+# Dimension of final pair representation
+pair_repr_dim: 256
+
+update_pair_repr: False  # whether to update pair representation
+update_pair_repr_every_n: 3  # Update the pair representation every n layers
+use_tri_mult: False  # whether to use triangular multiplication layers in pair update, ignored if not updating pair representation
+
+use_qkln: True

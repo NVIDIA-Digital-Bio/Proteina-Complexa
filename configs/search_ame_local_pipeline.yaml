@@ -1,0 +1,54 @@
+# AME (Motif + Ligand Binder) Design Pipeline Configuration
+#
+# Modular config that combines all pipeline stages:
+#   - model_sampling: Model schedules, temperatures, noise
+#   - ame_generate: Search, rewards, filtering (motif + ligand features)
+#   - ame_evaluate: Binder refolding + motif metrics
+#   - ame_analyze: Joint success filtering and diversity
+#
+# Usage:
+#   complexa design configs/search_ame_local_pipeline.yaml ++run_name=ame_test # ++generation.task_name=M0024_1nzy
+
+defaults:
+  - pipeline/ame/ame_generate@generation
+  - pipeline/ame/ame_evaluate@_global_
+  - pipeline/ame/ame_analyze@_global_
+  - _self_
+
+# =============================================================================
+# Environment variables (injected into subprocess env by the CLI runner)
+# =============================================================================
+env_vars:
+  USE_V2_COMPLEXA_ARCH: "True"
+
+# =============================================================================
+# Run identification
+# =============================================================================
+run_name: search_ame_local
+ckpt_path: ./ckpts
+ckpt_name: complexa_ame.ckpt
+autoencoder_ckpt_path: ./ckpts/complexa_ame_ae.ckpt
+
+# =============================================================================
+# LoRA (Low-Rank Adaptation) - required for the paper ligand model checkpoint
+# =============================================================================
+lora:
+  r: 32
+  lora_alpha: 64.0
+  lora_dropout: 0.0
+  train_bias: none
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+gen_njobs: 1
+eval_njobs: 1
+
+# =============================================================================
+# Hydra
+# =============================================================================
+hydra:
+  run:
+    dir: ./logs/hydra_outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}

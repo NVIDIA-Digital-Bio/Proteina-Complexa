@@ -1,0 +1,36 @@
+# Base unified dataset configuration
+# 
+# Unified dataset configuration
+# Pipeline:
+# PDB/CIF → AtomArray → atomarray_transforms → atom37 Data → atom37_transforms → model
+
+datamodule:
+  _target_: proteinfoundation.datasets.structure_data.StructureDataModule
+  metadata_file: ???  # Required: path to parquet/CSV with 'path' column
+  base_dir: ""  # Base directory for structure files (if paths are relative)
+  
+  # Dataloader settings
+  batch_size: 16
+  num_workers: 8
+  pin_memory: true
+  
+  # Metadata settings
+  id_column: example_id
+  path_column: path
+  filters: null
+  columns_to_load: null
+  
+  # Train/val split
+  train_split: 0.9
+  val_metadata_file: null
+  val_filters: null
+  
+  # Structure loading settings
+  use_parse: false  # Set to true for complex structures (ligands, etc.)
+  parser_args: null
+  
+  # Transforms
+  # atomarray_transforms are applied before atom37 conversion (supports atomworks Transform objects)
+  # atom37_transforms are applied to the atom37 Data object
+  atomarray_transforms: []
+  atom37_transforms: []

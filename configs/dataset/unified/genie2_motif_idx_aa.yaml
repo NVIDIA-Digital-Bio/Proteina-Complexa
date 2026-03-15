@@ -1,0 +1,32 @@
+# Genie2 Motif - AFDB monomers with motif scaffolding transforms
+# For motif-conditioned protein generation
+
+datamodule:
+  _target_: proteinfoundation.datasets.structure_data.StructureDataModule
+  metadata_file: ${oc.env:DATA_PATH}/afdb_clustered_laproteina/afdb_proteina_512_direct.parquet
+  base_dir: ""
+  batch_size: 5
+  num_workers: 16
+  train_split: 0.99
+  path_column: path
+  id_column: example_id
+  pin_memory: true
+  atom37_transforms:
+    - _target_: proteinfoundation.datasets.transforms.CoordsToNanometers
+    - _target_: proteinfoundation.datasets.transforms.GlobalRotationTransform
+    # Motif mask for scaffolding
+    - _target_: proteinfoundation.datasets.transforms.MotifMaskTransform
+      atom_selection_mode: "all" # tip_atoms, all
+      residue_selection_mode: "relative_fraction"
+      motif_prob: 1.0
+      motif_min_pct_res: 0.1
+      motif_max_pct_res: 0.5
+      motif_min_n_seg: 1
+      motif_max_n_seg: 3
+    - _target_: proteinfoundation.datasets.transforms.OpenFoldFrameTransform
+    - _target_: proteinfoundation.datasets.transforms.ChainBreakPerResidueTransform
+    - _target_: proteinfoundation.datasets.transforms.CenteringTransform
+      center_mode: "motif"
+      data_mode: "all-atom"
+    - _target_: proteinfoundation.datasets.transforms.ExtractMotifCoordinatesTransform
+      compact_mode: false

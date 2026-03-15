@@ -1,0 +1,450 @@
+# Motif binder (AME) design task definitions.
+#
+# Uses the shared target definition convention from target_dict_cfg:
+#   source, target_filename, binder_length, hotspot_residues, target_path,
+#   use_bonds_from_file
+# Plus motif-specific fields:
+#   ligand, contig_atoms
+#
+# The ``ligand`` field auto-determines is_target_ligand=True in parsing.
+
+motif_target_dict_cfg:
+
+  M0024_1nzy_og:
+    source: ame_targets
+    target_filename: M0024_1nzy
+    ligand: "BCA"
+    contig_atoms: "A64: [O, C]; A86: [CB, CA, N, C]; A90: [CE1, ND1, NE2, CG, CD2]; A114: [N, CA]; A137: [NE1, CD1, CE2, CG, CD2, CZ2]; A145: [OD2, CG, CB, OD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0024_1nzy.pdb
+    use_bonds_from_file: True
+
+  M0024_1nzy:
+    source: ame_targets
+    target_filename: M0024_1nzy_v2
+    ligand: "BCA"
+    contig_atoms: "B64: [O, C]; B86: [CB, CA, N, C]; B90: [CE1, ND1, NE2, CG, CD2]; B114: [N, CA]; B137: [NE1, CD1, CE2, CG, CD2, CZ2]; B145: [OD2, CG, CB, OD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    use_bonds_from_file: True
+
+  # TODO: Use this for RF3 evalaution with non complete CCD ligands. Prevents 53 vs 57 shape error on RMSD as RF3 adds back 4 missing heavy atoms.
+  M0024_1nzy_v3:
+    source: ame_targets
+    target_filename: M0024_1nzy_v3
+    ligand: "L:0"
+    contig_atoms: "B64: [O, C]; B86: [CB, CA, N, C]; B90: [CE1, ND1, NE2, CG, CD2]; B114: [N, CA]; B137: [NE1, CD1, CE2, CG, CD2, CZ2]; B145: [OD2, CG, CB, OD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0024_1nzy_v3.pdb
+    use_bonds_from_file: True
+
+  M0040_13pk:
+    source: ame_targets
+    target_filename: M0040_13pk
+    ligand: ["ADP", "MG", "3PG"]
+    contig_atoms: "A39: [NH1, CZ, NE, NH2]; A219: [NZ, CE, CD]; A376: [N, CA, C]; A399: [N, CA]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0040_13pk.pdb
+    use_bonds_from_file: True
+
+  M0050_1dbt:
+    source: ame_targets
+    target_filename: M0050_1dbt
+    ligand: "U5P"
+    contig_atoms: "A33: [NZ, CE]; A60: [OD2, CG, CB, OD1]; A62: [NZ, CE]; A123: [OG1, CB, CA, CG2]; A215: [N, CA, C, CB]; B65: [OD2, CG]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0050_1dbt.pdb
+    use_bonds_from_file: True
+
+  M0054_1qfe:
+    source: ame_targets
+    target_filename: M0054_1qfe
+    ligand: "DHS"
+    contig_atoms: "A86: [O, C, CA]; A143: [NE2, CD2, CE1, CG, ND1]; A170: [NZ, CE, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0054_1qfe.pdb
+    use_bonds_from_file: True
+
+  M0058_1cju:
+    source: ame_targets
+    target_filename: M0058_1cju
+    ligand: ["DAD", "MG"]
+    contig_atoms: "A396: [OD2, CG]; A397: [O, C, CA]; A440: [OD2, CG]; B1029: [NH1, CZ, NE, NH2]; B1065: [NZ, CE, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0058_1cju.pdb
+    use_bonds_from_file: True
+
+  M0078_1al6:
+    source: ame_targets
+    target_filename: M0078_1al6
+    ligand: ["OAA", "HAX"]
+    contig_atoms: "A244: [OG, CB]; A274: [ND1, CG, CE1, CB, CD2, NE2]; A320: [NE2, CD2, CE1]; A329: [NH2, CZ, NE, NH1]; A375: [OD2, CG, CB, OD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0078_1al6.pdb
+    use_bonds_from_file: True
+
+  M0092_1dli:
+    source: ame_targets
+    target_filename: M0092_1dli
+    ligand: ["UDX", "NAD"]
+    contig_atoms: "A118: [N, CA, C, CB]; A145: [N, CA]; A204: [NZ, CE, CD]; A208: [OD1, CG, CB, ND2]; A260: [SG, CB, CA]; A264: [OD1, CG, CB, OD2]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0092_1dli.pdb
+    use_bonds_from_file: True
+
+  M0093_1dqa:
+    source: ame_targets
+    target_filename: M0093_1dqa
+    ligand: ["NAP", "COA"]
+    contig_atoms: "A691: [NZ, CE, CD]; A767: [OD2, CG, CB, OD1]; B559: [OE2, CD]; B866: [CD2, CG, NE2, CB, ND1, CE1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0093_1dqa_fixA.pdb
+    use_bonds_from_file: True
+
+  M0096_1chm_og:
+    source: ame_targets
+    target_filename: M0096_1chm
+    ligand: "CMS"
+    contig_atoms: "A232: [NE2, CD2, CE1]; A262: [OE2, CD]; A358: [OE1, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0096_1chm.pdb
+    use_bonds_from_file: True
+  
+  M0096_1chm:
+    source: ame_targets
+    target_filename: M0096_1chm_v2
+    ligand: "CMS"
+    contig_atoms: "B232: [NE2, CD2, CE1]; B262: [OE2, CD]; B358: [OE1, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    use_bonds_from_file: True
+
+  M0097_1ctt:
+    source: ame_targets
+    target_filename: M0097_1ctt
+    ligand: ["DHZ", "ZN"]
+    contig_atoms: "A102: [ND1, CG, CE1]; A104: [OE1, CD]; A129: [SG, CB]; A132: [SG, CB, CA]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0097_1ctt.pdb
+    use_bonds_from_file: True
+
+  M0110_1c0p:
+    source: ame_targets
+    target_filename: M0110_1c0p
+    ligand: ["DAL", "PER", "FAD"]
+    contig_atoms: "A1054: [N, CA]; A1335: [O, C, CA]; A1339: [N, CA]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0110_1c0p.pdb
+    use_bonds_from_file: True
+
+  M0129_1os7:
+    source: ame_targets
+    target_filename: M0129_1os7
+    ligand: ["AKG", "FE2", "TAU"]
+    contig_atoms: "A99: [NE2, CD2, CE1]; A101: [OD1, CG, CB, OD2]; A255: [NE2, CD2, CE1, CG, ND1]; A270: [NH1, CZ]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0129_1os7.pdb
+    use_bonds_from_file: True
+
+  M0151_1q0n:
+    source: ame_targets
+    target_filename: M0151_1q0n
+    ligand: ["APC", "PH2", "MG"]
+    contig_atoms: "A82: [NE, CD, CZ]; A92: [NH2, CZ, NE, NH1]; A95: [OD1, CG]; A97: [OD2, CG]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0151_1q0n.pdb
+    use_bonds_from_file: True
+
+  M0157_1qh5:
+    source: ame_targets
+    target_filename: M0157_1qh5
+    ligand: ["GSH", "ZN"]
+    contig_atoms: "A54: [NE2, CD2, CE1]; A56: [ND1, CG, CE1, CB, CD2, NE2]; A58: [OD2, CG]; A59: [NE2, CD2, CE1]; A110: [NE2, CD2, CE1]; A134: [OD2, CG]; A173: [NE2, CD2, CE1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0157_1qh5.pdb
+    use_bonds_from_file: True
+
+  M0179_1q3s:
+    source: ame_targets
+    target_filename: M0179_1q3s
+    ligand: ["ADP", "MG"]
+    contig_atoms: "A64: [OD1, CG, CB, OD2]; A97: [N, CA, C, CB]; A98: [N, CA, C, CB]; A393: [OD2, CG, CB, OD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0179_1q3s.pdb
+    use_bonds_from_file: True
+
+  M0188_1xel:
+    source: ame_targets
+    target_filename: M0188_1xel
+    ligand: ["UPG", "NAD"]
+    contig_atoms: "A124: [OG, CB, CA]; A149: [OH, CZ, CE1, CE2]; A153: [NZ, CE]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0188_1xel.pdb
+    use_bonds_from_file: True
+
+  M0209_1lij:
+    source: ame_targets
+    target_filename: M0209_1lij
+    ligand: ["RPP", "ACP", "MG"]
+    contig_atoms: "A136: [NE, CD, CZ, CG, NH1, NH2]; A318: [OD2, CG]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0209_1lij.pdb
+    use_bonds_from_file: True
+
+  M0255_1mg5:
+    source: ame_targets
+    target_filename: M0255_1mg5
+    ligand: ["NAI", "ACT"]
+    contig_atoms: "A108: [ND2, CG]; A139: [OG, CB, CA]; A152: [OH, CZ]; A156: [NZ, CE, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0255_1mg5.pdb
+    use_bonds_from_file: True
+
+  M0315_1ey3:
+    source: ame_targets
+    target_filename: M0315_1ey3
+    ligand: "DAK"
+    contig_atoms: "A98: [N, CA]; A141: [N, CA]; A144: [OE1, CD, CG, OE2]; A164: [OE2, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0315_1ey3.pdb
+    use_bonds_from_file: True
+
+  M0349_1e3v:
+    source: ame_targets
+    target_filename: M0349_1e3v
+    ligand: "DXC"
+    contig_atoms: "A16: [OH, CZ, CE1, CE2]; A40: [OD2, CG]; A100: [N, CA, C, CB]; A103: [OD2, CG]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0349_1e3v.pdb
+    use_bonds_from_file: True
+
+  M0365_1pfk:
+    source: ame_targets
+    target_filename: M0365_1pfk
+    ligand: ["ADP", "FBP", "MG"]
+    contig_atoms: "A11: [N, CA]; A72: [NH2, CZ, NE, NH1]; A125: [OG1, CB, CA, CG2]; A127: [OD2, CG]; A129: [OD2, CG]; A171: [NH1, CZ, NE, NH2]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0365_1pfk.pdb
+    use_bonds_from_file: True
+
+  M0375_4ts9:
+    source: ame_targets
+    target_filename: M0375_4ts9
+    ligand: ["PO4", "FMC"]
+    contig_atoms: "A20: [N, CA]; A24: [CD, CG, NE, CB, CZ]; A87: [NH2, CZ]; A90: [OG, CB]; A204: [OD1, CG]; A217: [NH2, CZ, NE, NH1]; C43: [NH1, CZ]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0375_4ts9.pdb
+    use_bonds_from_file: True
+
+  M0500_1e3i:
+    source: ame_targets
+    target_filename: M0500_1e3i
+    ligand: ["CXF", "NAI", "ZN"]
+    contig_atoms: "A46: [SG, CB]; A47: [CD, N, CG]; A48: [OG1, CB]; A67: [NE2, CD2, CE1]; A178: [SG, CB, CA]; A182: [OG, CB]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0500_1e3i.pdb
+    use_bonds_from_file: True
+
+  M0552_1fgh:
+    source: ame_targets
+    target_filename: M0552_1fgh
+    ligand: "ATH"
+    contig_atoms: "A100: [OD2, CG]; A101: [NE2, CD2, CE1]; A165: [OD1, CG, CB, OD2]; A447: [NH1, CZ]; A642: [OG, CB, CA]; A644: [NE, CD, CZ]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0552_1fgh.pdb
+    use_bonds_from_file: True
+
+  M0555_1f8r:
+    source: ame_targets
+    target_filename: M0555_1f8r
+    ligand: ["CIT", "FAD"]
+    contig_atoms: "A223: [NE2, CD2, CE1, CG, ND1]; A326: [CE, CD, NZ]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0555_1f8r.pdb
+    use_bonds_from_file: True
+
+  M0584_1ldm:
+    source: ame_targets
+    target_filename: M0584_1ldm
+    ligand: ["NAD", "OXM"]
+    contig_atoms: "A106: [NE, CD, CZ]; A166: [OD1, CG]; A169: [NH2, CZ]; A193: [NE2, CD2, CE1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0584_1ldm.pdb
+    use_bonds_from_file: True
+
+  M0630_1j79:
+    source: ame_targets
+    target_filename: M0630_1j79
+    ligand: ["ORO", "ZN"]
+    contig_atoms: "A250: [OD1, CG]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0630_1j79_fixA.pdb
+    use_bonds_from_file: True
+
+  M0636_1uaq:
+    source: ame_targets
+    target_filename: M0636_1uaq
+    ligand: ["DUC", "ZN"]
+    contig_atoms: "A64: [OE2, CD, CG, OE1]; A89: [O, C]; A91: [SG, CB]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0636_1uaq.pdb
+    use_bonds_from_file: True
+
+  M0663_1rk2:
+    source: ame_targets
+    target_filename: M0663_1rk2
+    ligand: ["ADP", "RIB"]
+    contig_atoms: "A252: [N, CA]; A253: [CB, CA]; A254: [N, CA]; A255: [OD2, CG, CB, OD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0663_1rk2.pdb
+    use_bonds_from_file: True
+
+  M0664_2dhn:
+    source: ame_targets
+    target_filename: M0664_2dhn
+    ligand: "PH2"
+    contig_atoms: "A22: [OE2, CD]; A100: [NZ, CE, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0664_2dhn.pdb
+    use_bonds_from_file: True
+
+  M0674_1uf7:
+    source: ame_targets
+    target_filename: M0674_1uf7
+    ligand: "CDV"
+    contig_atoms: "A46: [OE1, CD, CG, OE2]; A126: [NZ, CE, CD]; A171: [CB, CA, N, C]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0674_1uf7_fixA.pdb
+    use_bonds_from_file: True
+
+  M0710_1ra0:
+    source: ame_targets
+    target_filename: M0710_1ra0
+    ligand: ["FE", "FPY"]
+    contig_atoms: "A156: [OE1, CD]; A217: [OE2, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0710_1ra0.pdb
+    use_bonds_from_file: True
+
+  M0711_2esd:
+    source: ame_targets
+    target_filename: M0711_2esd
+    ligand: ["G3H", "NAP"]
+    contig_atoms: "A154: [ND2, CG]; A250: [O, C, CA]; A284: [SG, CB, CA]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0711_2esd.pdb
+    use_bonds_from_file: True
+
+  M0717_1x7d:
+    source: ame_targets
+    target_filename: M0717_1x7d
+    ligand: ["ORN", "NAD"]
+    contig_atoms: "A56: [OE1, CD, CG, OE2]; A228: [OD2, CG, CB, OD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0717_1x7d.pdb
+    use_bonds_from_file: True
+
+  M0731_1mt5:
+    source: ame_targets
+    target_filename: M0731_1mt5
+    ligand: "MAY"
+    contig_atoms: "A142: [NZ, CE]; A217: [OG, CB, CA]; A218: [N, CA]; A238: [N, CA, C, CB]; A239: [N, CA, C]; A240: [N, CA]; A241: [OG, CB]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0731_1mt5.pdb
+    use_bonds_from_file: True
+
+  M0732_1xs1:
+    source: ame_targets
+    target_filename: M0732_1xs1
+    ligand: "DUT"
+    contig_atoms: "A124: [O, C]; A126: [O, C]; A138: [OE1, CD, CG, OE2]; C111: [N, CA, C, CB]; C115: [NH2, CZ, NE, NH1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0732_1xs1.pdb
+    use_bonds_from_file: True
+
+  M0738_1o98:
+    source: ame_targets
+    target_filename: M0738_1o98
+    ligand: ["2PG", "MN"]
+    contig_atoms: "A62: [OG, CB, CA]; A154: [OD1, CG]; A261: [NH1, CZ]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0738_1o98.pdb
+    use_bonds_from_file: True
+
+  M0739_1knp:
+    source: ame_targets
+    target_filename: M0739_1knp
+    ligand: ["SIN", "FAD"]
+    contig_atoms: "A290: [NH2, CZ, NE, NH1]; A351: [CE1, ND1, NE2]; A386: [CD2, CG, CB, CD1]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0739_1knp.pdb
+    use_bonds_from_file: True
+
+  M0870_1oh9:
+    source: ame_targets
+    target_filename: M0870_1oh9
+    ligand: ["ADP", "MG", "NLG"]
+    contig_atoms: "A8: [NZ, CE, CD]; A11: [N, CA, C]; A45: [N, CA, C]; A162: [OD2, CG, CB, OD1]; A217: [NZ, CE]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0870_1oh9.pdb
+    use_bonds_from_file: True
+
+  M0904_1qgx:
+    source: ame_targets
+    target_filename: M0904_1qgx
+    ligand: ["MG", "AMP"]
+    contig_atoms: "A49: [OD2, CG, CB, OD1]; A72: [OE1, CD, CG, OE2]; A142: [OD1, CG, CB, OD2]; A144: [O, C, CA]; A145: [CA, N, C, CB, O, CG]; A147: [OG1, CB]; A294: [OD2, CG]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0904_1qgx.pdb
+    use_bonds_from_file: True
+
+  M0907_1rbl:
+    source: ame_targets
+    target_filename: M0907_1rbl
+    ligand: ["MG", "FMT", "CAP"]
+    contig_atoms: "A175: [NZ, CE, CD]; A201: [NZ, CE]; A203: [OD1, CG, CB, OD2]; A204: [OE1, CD, CG, OE2]; A294: [NE2, CD2, CE1, CG, ND1]; A334: [NZ, CE, CD]"
+    binder_length: [180]
+    hotspot_residues: [null]
+    target_path: ./assets/target_data/ame_input_structures/M0907_1rbl.pdb
+    use_bonds_from_file: True

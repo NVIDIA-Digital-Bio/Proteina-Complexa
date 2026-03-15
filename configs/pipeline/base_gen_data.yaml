@@ -1,0 +1,39 @@
+
+# inference sampling dataloader and dataset
+
+dataloader:
+  _target_: torch.utils.data.DataLoader
+  batch_size: 10
+  shuffle: False
+  collate_fn:
+    _target_: proteinfoundation.datasets.gen_dataset.collate_fn
+    _partial_: true
+    padding_values: # Dict[str, Any] for padding tensors
+      target_chains: -1
+      chains: -1
+
+  # Sampling dataset
+  dataset:
+    _target_: proteinfoundation.datasets.gen_dataset.GenDataset
+    task_name: null
+    nres: null
+    # nres: [50, 100, 150, 200, 250]
+    # nres:
+    #   _target_: proteinfoundation.datasets.gen_dataset.UniformInt
+    #   low: 50
+    #   high: 100
+    #   nsamples: 10
+    #   endpoint: true
+    # nres:
+    #   _target_: numpy.random.randint
+    #   low: 50
+    #   high: 101
+    #   size: 10
+    # nres:
+    #   _target_: numpy.arange
+    #   start: 50
+    #   stop: 276
+    #   step: 25
+    nrepeat_per_sample: 1
+    conditional_features: null  # List[ConditionalFeature] to add conditional features
+    transforms: null # List[Callable] or Callable: Transform to apply to the sample. Can be a single transform or a list of transforms.

@@ -1,0 +1,47 @@
+# Unindexed Monomer Motif Scaffolding — Evaluation
+#
+# Motif positions are NOT known a priori. The evaluator uses greedy
+# coordinate matching (unindexed=true) to find where the motif ended
+# up in each generated structure. No motif_info CSV is needed.
+
+defaults:
+  - /design_tasks/motif_dict@dataset
+  - _self_
+
+# =============================================================================
+# Evaluation mode
+# =============================================================================
+protein_type: monomer_motif
+input_mode: generated
+dryrun: false
+show_progress: false
+
+# =============================================================================
+# Motif task configuration
+# =============================================================================
+dataset:
+  motif_task_name: ${generation.task_name}
+  unindexed: true
+
+# =============================================================================
+# Metric configuration
+# =============================================================================
+metric:
+  compute_motif_metrics: true
+  monomer_folding_models: [esmfold]
+
+  motif_rmsd_modes: [ca, all_atom]
+  designability_num_seq: 8
+  designability_modes: [ca]
+  codesignability_modes: [ca, all_atom]
+
+  compute_ss: true
+  compute_monomer_metrics: false
+  compute_co_sequence_recovery: false
+  compute_binder_metrics: false
+
+  compute_novelty_pdb: false
+  compute_novelty_afdb: false
+  compute_novelty_afdb_rep_v4: false
+
+  keep_folding_outputs: true

@@ -1,0 +1,73 @@
+name: transformer_ae  # name of architecture
+
+latent_z_dim: &latent_z_dim 8
+
+encoder:
+  nlayers: 12  # number of transformer layers
+  token_dim: 768  # dimension of the tokens in the sequence
+  nheads: 12  # number of attn heads
+  parallel_mha_transition: False  # whether to compute mha and transition as parallel and add them up (AF3 style) or sequentially (normal transofrmers)
+
+  strict_feats: False  # if False, then fills missing features with default values (e.g. chain break with zero, residue sequence index by [0, 1, 2, ...], etc)
+  # If True, if some feature is not provided, then it raises an error
+
+  # feats_seq: ["res_seq_pdb_idx", "chain_break_per_res", "x1_aatype", "x1_a37coors_nm", "x1_a37coors_nm_rel", "x1_bb_angles", "x1_sidechain_angles"]  # Sequence features to include in initial representation
+  feats_seq: ["chain_break_per_res", "x1_aatype", "x1_a37coors_nm", "x1_a37coors_nm_rel", "x1_bb_angles", "x1_sidechain_angles"] # , "chain_idx_seq"]  # Sequence features to include in initial representation
+  # feats_seq: ["chain_break_per_res", "x1_aatype", "x1_bb_angles", "x1_sidechain_angles"]  # Sequence features to include in initial representation
+  feats_cond_seq:  # Sequence features to include in conditioning variables
+
+  # Parameters for the features we extract
+  dim_cond: 128  # dimension of conditioning vector
+  idx_emb_dim: 128  # dimension of the sequence position [0, 1, 2, ...] (if contiguous residues) embeddings
+
+  feats_pair_repr: ["rel_seq_sep", "x1_bb_pair_dists_nm", "x1_bb_pair_orientation"] # , "chain_idx_pair"]  # Features to include in the pair representation
+  # feats_pair_repr: ["rel_seq_sep", "x1_bb_pair_dists_nm"]  # Features to include in the pair representation
+
+  seq_sep_dim: 127  # should be odd >= 5
+  pair_repr_dim: 256
+
+  update_pair_repr: False  # whether to update pair representation
+  update_pair_repr_every_n: 3  # Update the pair representation every n layers
+  use_tri_mult: False  # whether to use triangular multiplication layers in pair update, ignored if not updating pair representation
+
+  use_qkln: True
+
+  normalize_latent: false
+  latent_z_dim: *latent_z_dim
+
+decoder:
+  nlayers: 12  # number of transformer layers
+  token_dim: 768  # dimension of the tokens in the sequence
+
+  abs_coors: False  # Compute absolute coors or use relative to CA
+
+  # type: ff_local
+  # # This for 7m params
+  # nlayers: 12  # number of transformer layers
+  # token_dim: 768  # dimension of the tokens dim in the sequence
+
+  nheads: 12  # number of attn heads
+  parallel_mha_transition: False  # whether to compute mha and transition as parallel and add them up (AF3 style) or sequentially (normal transofrmers)
+
+  strict_feats: False  # if False, then fills missing features with default values (e.g. chain break with zero, residue sequence index by [0, 1, 2, ...], etc)
+  # If True, if some feature is not provided, then it raises an error
+
+  feats_seq: ["ca_coors_nm", "z_latent_seq"]  # Sequence features to include in initial representation
+  feats_cond_seq:  # Sequence features to include in conditioning variables
+
+  # Parameters for the features we extract
+  dim_cond: 128  # dimension of conditioning vector
+  idx_emb_dim: 128  # dimension of the sequence position [0, 1, 2, ...] (if contiguous residues) embeddings
+
+  feats_pair_repr: ["rel_seq_sep", "ca_coors_nm_pair_dists"]  # Features to include in the pair representation
+
+  seq_sep_dim: 127  # should be odd >= 5
+  pair_repr_dim: 256
+
+  update_pair_repr: False  # whether to update pair representation
+  update_pair_repr_every_n: 3  # Update the pair representation every n layers
+  use_tri_mult: False  # whether to use triangular multiplication layers in pair update, ignored if not updating pair representation
+
+  use_qkln: True
+  latent_z_dim: *latent_z_dim
+

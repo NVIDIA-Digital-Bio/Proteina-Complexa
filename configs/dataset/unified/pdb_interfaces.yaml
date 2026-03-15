@@ -1,0 +1,42 @@
+# PDB interfaces dataset configuration
+defaults:
+  - base
+
+datamodule:
+  metadata_file: ${oc.env:DATA_PATH}/pdb_mirror_processed/interfaces_df_prot_lig.parquet
+  filters:
+    - "deposition_date < '2024-01-01'"
+    - "resolution < 9.0"
+    - "num_polymer_pn_units <= 300"
+    - "cluster.notnull()"
+  columns_to_load:
+    - example_id
+    - pdb_id
+    - assembly_id
+    - path
+    - deposition_date
+    - resolution
+    - num_polymer_pn_units
+    - cluster
+  
+  # Parser args for PDB mirror
+  parser_args:
+    cache_dir: null
+    load_from_cache: false
+    save_to_cache: false
+
+  # Crop settings for interfaces
+  crop_contiguous_probability: 0.0
+  crop_spatial_probability: 1.0
+
+
+
+
+
+
+
+
+
+
+
+

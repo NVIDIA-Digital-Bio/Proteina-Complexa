@@ -1,0 +1,59 @@
+# Monomer Analysis Configuration
+#
+# Aggregation settings for analyzing monomer evaluation results.
+#
+# Usage:
+#   python -m proteinfoundation.analyze --config-path ../../configs/pipeline --config-name monomer_analyze
+
+defaults:
+  - _self_
+
+# =============================================================================
+# Result type
+# =============================================================================
+result_type: monomer
+dryrun: false
+
+# =============================================================================
+# Path configuration (auto-set by config generator in pipeline mode)
+# =============================================================================
+results_dir: ./evaluation_results/monomer_eval
+
+# =============================================================================
+# Analysis settings
+# =============================================================================
+aggregation:
+  # Limit number of result files (null = all)
+  limit: null
+
+  # ---------------------------------------------------------------------------
+  # Analysis modes
+  # ---------------------------------------------------------------------------
+  # For monomers, only run monomer analysis (designability, codesignability, diversity)
+  analysis_modes: [monomer]
+  
+  # Diversity computation
+  compute_diversity: true           # Structural diversity via FoldSeek
+  compute_mmseqs_diversity: true    # Sequence diversity via MMseqs2
+
+  # ---------------------------------------------------------------------------
+  # Additional monomer aggregation metrics
+  # ---------------------------------------------------------------------------
+  # Residue type (amino acid) distribution proportions
+  compute_residue_type_distribution: true
+
+  # ---------------------------------------------------------------------------
+  # Monomer thresholds
+  # ---------------------------------------------------------------------------
+  # null = auto-detect available modes/models from data and use default threshold of 2.0
+  #
+  # Designability thresholds (applied to _res_scRMSD_{mode}_{model} columns):
+  designability_thresholds: null
+  
+  # Codesignability thresholds (applied to _res_co_scRMSD_{mode}_{model} columns):
+  codesignability_thresholds: null
+  
+  # If true, samples must pass ALL specified thresholds (AND logic)
+  # If false, samples must pass ANY specified threshold (OR logic)
+  require_all_thresholds: false
+

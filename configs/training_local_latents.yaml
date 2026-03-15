@@ -1,0 +1,133 @@
+### ### ### ### ### ### ###
+# These are the things that you need to set properly
+# before resubmitting a job with a directory that's
+# already in the cluster. This is because the submission
+# script reads the number of nodes and GPUs from this
+# file. Not the ones in the cluster.
+
+# We could potentially fix this by reading the config
+# file from the cluster, low priority.
+### ### ### ### ### ### ###
+
+
+run_name: laproteina_afdb_proteina_512_direct_4_no_pdbidx-batch_5-tip_atoms-v2
+
+hardware:
+  ncpus_per_task_train_: 24  # Number of CPUs per tast during training
+  ncpus_per_task_prepro_: 32  # Number of CPUs used for data preprocessing run
+  accelerator: gpu
+  ngpus_per_node_: 8  # Number of GPUs per node
+  nnodes_: 6  # Number of nodes
+
+### ### ### ### ### ### ###
+
+defaults:
+  - nn: local_latents_score_nn_160M
+  - generation: validation_local_latents    # specify all arguments for validation
+  - dataset: unified/genie2_motif
+  - _self_
+
+
+# Pre-training checkpoint to start from there
+pretrain_ckpt_path:
+
+
+# Modalities to use
+product_flowmatcher:
+  bb_ca:
+    zero_com_noise: False  # whether to center noise samples
+    guidance_enabled: true  # whether this modality can use guidance
+    dim: 3  # Only CA atoms in bb_ca
+  local_latents:
+    zero_com_noise: False  # whether to center noise samples
+    guidance_enabled: True
+    dim: null  # Overwritten in the code by the correct value loaded from the autoencoder (likely 4 or 8)
+    
+
+# If an autoencoder is used, specify the path to the checkpoint
+# autoencoder_ckpt_path: /path/to/autoencoder/checkpoint.ckpt
+autoencoder_ckpt_path: null
+
+# Loss
+loss:
+  t_distribution:
+    bb_ca:
+      name: mix_unif_beta
+      p1: 1.9
+      p2: 1.0
+      p3: 0.02
+    local_latents:
+      name: mix_unif_beta
+      p1: 1.0
+      p2: 1.5
+      p3: 0.02
+      # name: uniform
+      # p1: 1.0
+      # p2: 1.0
+
+    shared_groups:
+      # example below, {"bb_ca", "sc_angle"} will share same t, {"dm_a", "dm_b"} will share another t
+      # right now all modalities same distribution, can also make the distribution used mode dependent
+      # - ["bb_ca", "sc_angle"]
+      # - ["dm_a", "dm_b"]
+      # - ["bb_ca", "local_latents"]
+  # loss_t_clamp: 0.9  # Used for loss stability in frameflow, 1. for no clamping
+  # use_aux_loss: True  # Whether to use auxiliary loss
+  # aux_loss_t_lim: 0.3  # Time limit to apply auxiliary loss
+  # thres_aux_2d_loss: 0.6  # This is nm not Å
+  # aux_loss_weight: 1.0
+  # num_dist_buckets: 64  # Number of buckets to discretize the pairwise distance
+  # max_dist_boundary: 1.0  # Given by nanometer
+
+# Precision
+force_precision_f32: False  # If false will use bf16-mixed precision
+
+# Training
+training:
+  n_recycle: 0
+  motif_conditioning: False
+  self_cond: True
+  fold_cond: False
+  target_cond: False
+  mask_T_prob: 0.5
+  mask_A_prob: 0.5
+  mask_C_prob: 0.5
+  fold_label_sample_ratio: [0.5, 0.1, 0.15, 0.25]   # Training proportion for [None, C, CA, CAT]. If specified, will override mask_{C,A,T}_prob
+  p_folding_n_inv_folding_iters: 0.05
+
+# LoRA
+lora:
+  r: null   # Rank of low-rank adpation of matrices. Set r as null to turn off lora
+  lora_alpha: 32.0     # Scaling of lora matrices
+  lora_dropout: 0.0   # Dropout of lora inputs
+  train_bias: none  # Fine-tune bias or not. ['none', 'all', 'lora_only']
+
+# Optimization
+opt:
+  lr: 0.0001
+  max_epochs: 10000000
+  accumulate_grad_batches: 1
+  skip_nan_grad: True  # Skip updates with nan gradient
+  grad_and_weight_analysis: False  # Log some statistics of gradients and weights
+  dist_strategy: ddp  # For multi GPU training, do not change
+  val_check_interval: 5000000  # Number of training steps after which we check validation loss
+
+# wandb logging and checkpoints
+log:
+  wandb_project: pfm_local_latents_v1
+  wandb_entity: null
+  log_wandb: True  # whether to log to wandb
+  log_every_n_steps: 10  # wandb logging frequency
+  checkpoint: True  # whether to store checkpoints
+  checkpoint_every_n_steps: 10000  # How often we store a checkpoint, should be greater than val_check_interval in `opt`
+  last_ckpt_every_n_steps: 1500  # How often do we update our last ckpt, needed for requeuing without losing progress
+
+seed: 42
+
+ema:
+  decay: 0.999  # 0 means no EMA, so all the EMA machinery is unused and no EMA checkpoints are stored
+  validate_original_weights: False  # Whether to run validation on regular or EMA weights
+  every_n_steps: 1  # Frequency of EMA updates
+  cpu_offload: False  # Whether to offload EMA weights to cpu
+
+

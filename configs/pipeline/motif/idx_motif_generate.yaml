@@ -1,0 +1,89 @@
+# Indexed Monomer Motif Scaffolding — Generation
+#
+# The motif is embedded at specific contig positions within the scaffold.
+# MotifFeatures with padding=True controls total protein length via the
+# contig string + min/max_length from motif_dict.yaml.
+#
+# Motif tasks: configs/design_tasks/motif_dict.yaml
+
+defaults:
+  - /design_tasks/motif_dict@_here_
+  - /pipeline/base_gen_data@_here_
+  - /pipeline/model_sampling@_here_
+  - _self_
+
+# =============================================================================
+# Task and dataloader
+# =============================================================================
+task_name: 1YCR_AA
+
+dataloader:
+  batch_size: 5
+  dataset:
+    task_name: ${...task_name}
+    nres: null  # MotifFeatures controls length in indexed mode
+    nrepeat_per_sample: 1
+    conditional_features:
+      - _target_: proteinfoundation.datasets.gen_dataset.MotifFeatures
+        task_name: ${...task_name}
+        pdb_path: ${.....motif_dict_cfg.${.task_name}.motif_pdb_path}
+        atom_selection_mode: ${.....motif_dict_cfg.${.task_name}.atom_selection_mode}
+        nsamples: 100
+        contig_string: ${.....motif_dict_cfg.${.task_name}.contig_string}
+        motif_only: ${.....motif_dict_cfg.${.task_name}.motif_only}
+        min_length: ${.....motif_dict_cfg.${.task_name}.motif_min_length}
+        max_length: ${.....motif_dict_cfg.${.task_name}.motif_max_length}
+        segment_order: ${.....motif_dict_cfg.${.task_name}.segment_order}
+        padding: True
+    transforms:
+      - _target_: proteinfoundation.datasets.transforms.CoordsTensorCenteringTransform
+        tensor_name: "x_motif"
+        mask_name: "motif_mask"
+        data_mode: "all-atom"
+
+# =============================================================================
+# Search algorithm
+# =============================================================================
+search:
+  algorithm: single-pass
+  max_batch_size: ${..dataloader.batch_size}
+  reward_threshold: null
+  step_checkpoints: [0, 100, 200, 300, 400]
+
+  best_of_n:
+    replicas: 2
+
+  beam_search:
+    n_branch: 4
+    beam_width: 4
+    keep_lookahead_samples: true
+    save_intermediate_states: false
+
+  fk_steering:
+    n_branch: 4
+    beam_width: 4
+    temperature: 0.1
+    keep_lookahead_samples: true
+
+  mcts:
+    n_simulations: 20
+    exploration_prob: 0.5
+    exploration_constant: 1.0
+    keep_lookahead_samples: true
+
+# =============================================================================
+# Refinement (disabled by default)
+# =============================================================================
+refinement:
+  algorithm: null
+  refine_targets: final
+  save_pre_refinement: none
+
+# =============================================================================
+# Post-generation filtering
+# =============================================================================
+filter:
+  filter_samples_limit: null
+  delete_non_top_n_samples: false
+  dedup_sequence: true
+  reward_threshold: null

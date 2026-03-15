@@ -1,0 +1,592 @@
+motif_dict_cfg:
+  1PRW_AA:
+    contig_string: 5-20/A1-20/10-25/B1-20/5-20
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1prw_aa.pdb
+    motif_only: True
+    motif_min_length: 60
+    motif_max_length: 105
+    segment_order: "A;B"
+    atom_selection_mode: "all_atom"
+  1PRW_AA_TIP:
+    contig_string: 5-20/A1-20/10-25/B1-20/5-20
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1prw_aa.pdb
+    motif_only: True
+    motif_min_length: 60
+    motif_max_length: 105
+    segment_order: "A;B"
+    atom_selection_mode: "tip_atoms"
+  1BCF_AA:
+    contig_string: 8-15/A92-99/16-30/A123-130/16-30/A47-54/16-30/A18-25/8-15
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1bcf_aa.pdb
+    motif_only: True
+    motif_min_length: 96
+    motif_max_length: 152
+    segment_order: "A;B;C;D"
+    atom_selection_mode: "all_atom"
+  1BCF_AA_TIP:
+    contig_string: 8-15/A92-99/16-30/A123-130/16-30/A47-54/16-30/A18-25/8-15
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1bcf_aa.pdb
+    motif_only: True
+    motif_min_length: 96
+    motif_max_length: 152
+    segment_order: "A;B;C;D"
+    atom_selection_mode: "tip_atoms"
+  5TPN_AA:
+    contig_string: 10-40/A163-181/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5tpn_aa.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 75
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  5TPN_AA_TIP:
+    contig_string: 10-40/A163-181/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5tpn_aa.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 75
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  5IUS_AA:
+    contig_string: 0-30/B119-140/15-40/A63-82/0-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5ius_aa.pdb
+    motif_only: True
+    motif_min_length: 57
+    motif_max_length: 142
+    segment_order: "B;A"
+    atom_selection_mode: "all_atom"
+  5IUS_AA_TIP:
+    contig_string: 0-30/B119-140/15-40/A63-82/0-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5ius_aa.pdb
+    motif_only: True
+    motif_min_length: 57
+    motif_max_length: 142
+    segment_order: "B;A"
+    atom_selection_mode: "tip_atoms"
+  3IXT_AA:
+    contig_string: 10-40/P254-277/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/3ixt_aa.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 75
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  3IXT_AA_TIP:
+    contig_string: 10-40/P254-277/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/3ixt_aa.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 75
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  5YUI_AA:
+    contig_string: 5-30/A93-97/5-20/B118-120/10-35/C198-200/10-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5yui_aa.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 100
+    segment_order: "A;B;C"
+    atom_selection_mode: "all_atom"
+  5YUI_AA_TIP:
+    contig_string: 5-30/A93-97/5-20/B118-120/10-35/C198-200/10-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5yui_aa.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 100
+    segment_order: "A;B;C"
+    atom_selection_mode: "tip_atoms"
+  5AOU_AA:
+    contig_string: 40-60/A1051/20-40/A2083/20-35/A2110/100-140
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5aou_aa.pdb
+    motif_only: True
+    motif_min_length: 230
+    motif_max_length: 270
+    segment_order: "A;B;C"
+    atom_selection_mode: "all_atom"
+  5AOU_AA_TIP:
+    contig_string: 40-60/A1051/20-40/A2083/20-35/A2110/100-140
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5aou_aa.pdb
+    motif_only: True
+    motif_min_length: 230
+    motif_max_length: 270
+    segment_order: "A;B;C"
+    atom_selection_mode: "tip_atoms"
+  5AOU_QUAD_AA:
+    contig_string: 40-60/A1051/20-40/A2083/20-35/A2110/60-80/A2180/40-60
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5aou_quad_aa.pdb
+    motif_only: True
+    motif_min_length: 230
+    motif_max_length: 270
+    segment_order: "A;B;C;D"
+    atom_selection_mode: "all_atom"
+  5AOU_QUAD_AA_TIP:
+    contig_string: 40-60/A1051/20-40/A2083/20-35/A2110/60-80/A2180/40-60
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5aou_quad_aa.pdb
+    motif_only: True
+    motif_min_length: 230
+    motif_max_length: 270
+    segment_order: "A;B;C;D"
+    atom_selection_mode: "tip_atoms"
+  7K4V_AA:
+    contig_string: 40-50/A44/3-8/A50/70-85/A127/150-200
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7k4v_aa.pdb
+    motif_only: True
+    motif_min_length: 280
+    motif_max_length: 320
+    segment_order: "A;B;C"
+    atom_selection_mode: "all_atom"
+  7K4V_AA_TIP:
+    contig_string: 40-50/A44/3-8/A50/70-85/A127/150-200
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7k4v_aa.pdb
+    motif_only: True
+    motif_min_length: 280
+    motif_max_length: 320
+    segment_order: "A;B;C"
+    atom_selection_mode: "tip_atoms"
+  1YCR_AA:
+    contig_string: 10-40/B19-27/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1ycr_aa.pdb
+    motif_only: True
+    motif_min_length: 40
+    motif_max_length: 100
+    segment_order: "A"
+    atom_selection_mode: "all_atom"
+  1YCR_AA_TIP:
+    contig_string: 10-40/B19-27/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1ycr_aa.pdb
+    motif_only: True
+    motif_min_length: 40
+    motif_max_length: 100
+    segment_order: "A"
+    atom_selection_mode: "tip_atoms"
+  4JHW_AA:
+    contig_string: 10-25/F196-212/15-30/F63-69/10-25
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/4jhw_aa.pdb
+    motif_only: True
+    motif_min_length: 60
+    motif_max_length: 90
+    segment_order: "B;A"
+    atom_selection_mode: "all_atom"
+  4JHW_AA_TIP:
+    contig_string: 10-25/F196-212/15-30/F63-69/10-25
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/4jhw_aa.pdb
+    motif_only: True
+    motif_min_length: 60
+    motif_max_length: 90
+    segment_order: "B;A"
+    atom_selection_mode: "tip_atoms"
+  5WN9_AA:
+    contig_string: 10-40/A170-189/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5wn9_aa.pdb
+    motif_only: True
+    motif_min_length: 35
+    motif_max_length: 50
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  5WN9_AA_TIP:
+    contig_string: 10-40/A170-189/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5wn9_aa.pdb
+    motif_only: True
+    motif_min_length: 35
+    motif_max_length: 50
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  4ZYP_AA:
+    contig_string: 10-40/A422-436/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/4zyp_aa.pdb
+    motif_only: True
+    motif_min_length: 30
+    motif_max_length: 50
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  4ZYP_AA_TIP:
+    contig_string: 10-40/A422-436/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/4zyp_aa.pdb
+    motif_only: True
+    motif_min_length: 30
+    motif_max_length: 50
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  6VW1_AA:
+    contig_string: 20-30/A24-42/4-10/A64-82/0-5
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6vw1_aa.pdb
+    motif_only: True
+    motif_min_length: 62
+    motif_max_length: 83
+    segment_order: A;B
+    atom_selection_mode: "all_atom"
+  6VW1_AA_TIP:
+    contig_string: 20-30/A24-42/4-10/A64-82/0-5
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6vw1_aa.pdb
+    motif_only: True
+    motif_min_length: 62
+    motif_max_length: 83
+    segment_order: A;B
+    atom_selection_mode: "tip_atoms"
+  1QJG_AA:
+    contig_string: 10-20/A38/15-30/A14/15-30/A99/10-20
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1qjg_aa.pdb
+    motif_only: False
+    motif_min_length: 53
+    motif_max_length: 103
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  1QJG_AA_TIP:
+    contig_string: 10-20/A38/15-30/A14/15-30/A99/10-20
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1qjg_aa.pdb
+    motif_only: False
+    motif_min_length: 53
+    motif_max_length: 103
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  1QJG_AA_NATIVE:
+    contig_string: 10-20/A14/15-30/A38/50-70/A99/25-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1qjg_aa.pdb
+    motif_only: False
+    motif_min_length: 115
+    motif_max_length: 135
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  1QJG_AA_NATIVE_TIP:
+    contig_string: 10-20/A14/15-30/A38/50-70/A99/25-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/1qjg_aa.pdb
+    motif_only: False
+    motif_min_length: 115
+    motif_max_length: 135
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  2KL8_AA:
+    contig_string: A1-7/20/A28-79
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/2kl8_aa.pdb
+    motif_only: False
+    motif_min_length: 79
+    motif_max_length: 79
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  2KL8_AA_TIP:
+    contig_string: A1-7/20/A28-79
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/2kl8_aa.pdb
+    motif_only: False
+    motif_min_length: 79
+    motif_max_length: 79
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  7MRX_AA_60:
+    contig_string: 0-38/B25-46/0-38
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7mrx_aa.pdb
+    motif_only: False
+    motif_min_length: 60
+    motif_max_length: 60
+    segment_order: B
+    atom_selection_mode: "all_atom"
+  7MRX_AA_60_TIP:
+    contig_string: 0-38/B25-46/0-38
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7mrx_aa.pdb
+    motif_only: False
+    motif_min_length: 60
+    motif_max_length: 60
+    segment_order: B
+    atom_selection_mode: "tip_atoms"
+  7MRX_AA_85:
+    contig_string: 0-63/B25-46/0-63
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7mrx_aa.pdb
+    motif_only: False
+    motif_min_length: 85
+    motif_max_length: 85
+    segment_order: B
+    atom_selection_mode: "all_atom"
+  7MRX_AA_85_TIP:
+    contig_string: 0-63/B25-46/0-63
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7mrx_aa.pdb
+    motif_only: False
+    motif_min_length: 85
+    motif_max_length: 85
+    segment_order: B
+    atom_selection_mode: "tip_atoms"
+  7MRX_AA_128:
+    contig_string: 0-122/B25-46/0-122
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7mrx_aa.pdb
+    motif_only: False
+    motif_min_length: 128
+    motif_max_length: 128
+    segment_order: B
+    atom_selection_mode: "all_atom"
+  7MRX_AA_128_TIP:
+    contig_string: 0-122/B25-46/0-122
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/7mrx_aa.pdb
+    motif_only: False
+    motif_min_length: 128
+    motif_max_length: 128
+    segment_order: B
+    atom_selection_mode: "tip_atoms"
+  5TRV_AA_SHORT:
+    contig_string: 0-35/A45-65/0-35
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5trv_aa.pdb
+    motif_only: False
+    motif_min_length: 56
+    motif_max_length: 56
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  5TRV_AA_SHORT_TIP:
+    contig_string: 0-35/A45-65/0-35
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5trv_aa.pdb
+    motif_only: False
+    motif_min_length: 56
+    motif_max_length: 56
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  5TRV_AA_MED:
+    contig_string: 0-65/A45-65/0-65
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5trv_aa.pdb
+    motif_only: False
+    motif_min_length: 86
+    motif_max_length: 86
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  5TRV_AA_MED_TIP:
+    contig_string: 0-65/A45-65/0-65
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5trv_aa.pdb
+    motif_only: False
+    motif_min_length: 86
+    motif_max_length: 86
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  5TRV_AA_LONG:
+    contig_string: 0-95/A45-65/0-95
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5trv_aa.pdb
+    motif_only: False
+    motif_min_length: 116
+    motif_max_length: 116
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  5TRV_AA_LONG_TIP:
+    contig_string: 0-95/A45-65/0-95
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/5trv_aa.pdb
+    motif_only: False
+    motif_min_length: 116
+    motif_max_length: 116
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  6E6R_AA_SHORT:
+    contig_string: 0-35/A23-35/0-35
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6e6r_aa.pdb
+    motif_only: False
+    motif_min_length: 48
+    motif_max_length: 48
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  6E6R_AA_SHORT_TIP:
+    contig_string: 0-35/A23-35/0-35
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6e6r_aa.pdb
+    motif_only: False
+    motif_min_length: 48
+    motif_max_length: 48
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  6E6R_AA_MED:
+    contig_string: 0-65/A23-35/0-65
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6e6r_aa.pdb
+    motif_only: False
+    motif_min_length: 78
+    motif_max_length: 78
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  6E6R_AA_MED_TIP:
+    contig_string: 0-65/A23-35/0-65
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6e6r_aa.pdb
+    motif_only: False
+    motif_min_length: 78
+    motif_max_length: 78
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  6E6R_AA_LONG:
+    contig_string: 0-95/A23-35/0-95
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6e6r_aa.pdb
+    motif_only: False
+    motif_min_length: 108
+    motif_max_length: 108
+    segment_order: A
+    atom_selection_mode: "all_atom"
+  6E6R_AA_LONG_TIP:
+    contig_string: 0-95/A23-35/0-95
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data_aa/6e6r_aa.pdb
+    motif_only: False
+    motif_min_length: 108
+    motif_max_length: 108
+    segment_order: A
+    atom_selection_mode: "tip_atoms"
+  1BCF:
+    contig_string: 8-15/A92-99/16-30/B123-130/16-30/C47-54/16-30/D18-25/8-15
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/1BCF.pdb
+    motif_only: True
+    motif_min_length: 96
+    motif_max_length: 152
+    segment_order: "A;B;C;D"
+  4ZYP:
+    contig_string: 10-40/A422-436/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/4ZYP.pdb
+    motif_only: True
+    motif_min_length: 30
+    motif_max_length: 50
+    segment_order: A
+  3IXT:
+    contig_string: 10-40/A254-277/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/3IXT.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 75
+    segment_order: A
+  4JHW:
+    contig_string: 10-25/B196-212/15-30/A63-69/10-25
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/4JHW.pdb
+    motif_only: True
+    motif_min_length: 60
+    motif_max_length: 90
+    segment_order: "B;A"
+  5IUS:
+    contig_string: 0-30/B119-140/15-40/A63-82/0-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/5IUS.pdb
+    motif_only: True
+    motif_min_length: 57
+    motif_max_length: 142
+    segment_order: "B;A"
+  5TPN:
+    contig_string: 10-40/A163-181/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/5TPN.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 75
+    segment_order: A
+  5TRV_long:
+    contig_string: 0-95/A45-65/0-95
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/5TRV.pdb
+    motif_only: True
+    motif_min_length: 116
+    motif_max_length: 116
+    segment_order: A
+  5TRV_med:
+    contig_string: 0-65/A45-65/0-65
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/5TRV.pdb
+    motif_only: True
+    motif_min_length: 86
+    motif_max_length: 86
+    segment_order: A
+  5TRV_short:
+    contig_string: 0-35/A45-65/0-35
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/5TRV.pdb
+    motif_only: True
+    motif_min_length: 56
+    motif_max_length: 56
+    segment_order: A
+  5WN9:
+    contig_string: 10-40/A170-189/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/5WN9.pdb
+    motif_only: True
+    motif_min_length: 35
+    motif_max_length: 50
+    segment_order: A
+  5YUI:
+    contig_string: 5-30/A93-97/5-20/B118-120/10-35/C198-200/10-30
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/5YUI.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 100
+    segment_order: "A;B;C"
+  6E6R_long:
+    contig_string: 0-95/A23-35/0-95
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/6E6R.pdb
+    motif_only: True
+    motif_min_length: 108
+    motif_max_length: 108
+    segment_order: A
+  6E6R_med:
+    contig_string: 0-65/A23-35/0-65
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/6E6R.pdb
+    motif_only: True
+    motif_min_length: 78
+    motif_max_length: 78
+    segment_order: A
+  6E6R_short:
+    contig_string: 0-35/A23-35/0-35
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/6E6R.pdb
+    motif_only: True
+    motif_min_length: 48
+    motif_max_length: 48
+    segment_order: A
+  6EXZ_long:
+    contig_string: 0-95/A28-42/0-95
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/6EXZ.pdb
+    motif_only: True
+    motif_min_length: 110
+    motif_max_length: 110
+    segment_order: A
+  6EXZ_med:
+    contig_string: 0-65/A28-42/0-65
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/6EXZ.pdb
+    motif_only: True
+    motif_min_length: 80
+    motif_max_length: 80
+    segment_order: A
+  6EXZ_short:
+    contig_string: 0-35/A28-42/0-35
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/6EXZ.pdb
+    motif_only: True
+    motif_min_length: 50
+    motif_max_length: 50
+    segment_order: A
+  7MRX_128:
+    contig_string: 0-122/A25-46/0-122
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/7MRX.pdb
+    motif_only: True
+    motif_min_length: 128
+    motif_max_length: 128
+    segment_order: A
+  7MRX_60:
+    contig_string: 0-38/A25-46/0-38
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/7MRX.pdb
+    motif_only: True
+    motif_min_length: 60
+    motif_max_length: 60
+    segment_order: A
+  7MRX_85:
+    contig_string: 0-63/A25-46/0-63
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/7MRX.pdb
+    motif_only: True
+    motif_min_length: 85
+    motif_max_length: 85
+    segment_order: A
+  1PRW:
+    contig_string: 5-20/A1-20/10-25/B1-20/5-20
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/1PRW.pdb
+    motif_only: True
+    motif_min_length: 60
+    motif_max_length: 105
+    segment_order: "A;B"
+  1QJG:
+    contig_string: 10-20/B38/15-30/A14/15-30/C99/10-20
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/1QJG.pdb
+    motif_only: True
+    motif_min_length: 53
+    motif_max_length: 103
+    segment_order: "B;A;C"
+  1QJG_incr_order:
+    contig_string: 10-20/A14/15-30/B38/15-30/C99/10-20
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/1QJG.pdb
+    motif_only: True
+    motif_min_length: 53
+    motif_max_length: 103
+    segment_order: "A;B;C"
+  1YCR:
+    contig_string: 10-40/A19-27/10-40
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/1YCR.pdb
+    motif_only: True
+    motif_min_length: 40
+    motif_max_length: 100
+    segment_order: "A"
+  2KL8:
+    contig_string: A1-7/20/B28-79
+    motif_pdb_path: ${oc.env:DATA_PATH}/motif_data/2KL8.pdb
+    motif_only: True
+    motif_min_length: 79
+    motif_max_length: 79
+    segment_order: "A;B"

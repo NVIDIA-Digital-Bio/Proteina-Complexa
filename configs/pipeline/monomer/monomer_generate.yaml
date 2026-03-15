@@ -1,0 +1,25 @@
+# Monomer Generation Configuration
+
+defaults:
+  - base_gen_data@generation
+  - model_sampling@generation
+  - _self_
+
+seed: 5
+ckpt_path: ./store
+ckpt_name: ckpt_laprot.ckpt
+autoencoder_ckpt_path: ./store/ckpt_ae.ckpt
+
+
+
+# =============================================================================
+# Generation config (code expects cfg.generation.*)
+# =============================================================================
+
+generation:
+  dataloader:
+    batch_size: 16
+    dataset:
+      nres: [100, 200, 300, 400, 500]
+      nrepeat_per_sample: 100
+

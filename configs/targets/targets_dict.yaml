@@ -1,0 +1,396 @@
+target_dict_cfg:
+  01_PD1:
+    source: bindcraft_targets
+    target_filename: PD1
+    target_path: ./assets/target_data/bindcraft_targets/PD1.pdb
+    target_input: A1-115
+    hotspot_residues: ["A33", "A95", "A97", "A102"]
+    binder_length: [80, 150]
+    pdb_id: null
+
+  02_PDL1:
+    source: bindcraft_targets
+    target_filename: PD-L1
+    target_path: ./assets/target_data/bindcraft_targets/PD-L1.pdb
+    target_input: A1-115
+    hotspot_residues: ["A37", "A39", "A49", "A98"]
+    binder_length: [64, 155]
+    pdb_id: null
+
+  03_PDL1_AAV:
+    source: bindcraft_targets
+    target_filename: PD-L1
+    target_path: ./assets/target_data/bindcraft_targets/PD-L1.pdb
+    target_input: A1-115
+    hotspot_residues: ["A37", "A39", "A41", "A46", "A49", "A96", "A98"]
+    binder_length: [75, 115]
+    pdb_id: null
+
+  04_IFNAR2:
+    source: bindcraft_targets
+    target_filename: IFNAR2
+    target_path: ./assets/target_data/bindcraft_targets/IFNAR2.pdb
+    target_input: A1-103
+    hotspot_residues: ["A45", "A73", "A75", "A77", "A89", "A91"]
+    binder_length: [60, 175]
+    pdb_id: "2lag"
+
+  05_CD45:
+    source: bindcraft_targets
+    target_filename: CD45
+    target_path: ./assets/target_data/bindcraft_targets/CD45.pdb
+    target_input: A1-88
+    hotspot_residues: ["A1"]
+    binder_length: [80, 200]
+    pdb_id: null
+
+  06_CD45:
+    source: bindcraft_targets
+    target_filename: CD45
+    target_path: ./assets/target_data/bindcraft_targets/CD45.pdb
+    target_input: A1-88
+    hotspot_residues: ["A2"]
+    binder_length: [80, 200]
+    pdb_id: null
+
+  07_CD45:
+    source: bindcraft_targets
+    target_filename: CD45
+    target_path: ./assets/target_data/bindcraft_targets/CD45.pdb
+    target_input: A1-88
+    hotspot_residues: ["A3"]
+    binder_length: [80, 200]
+    pdb_id: null
+
+  08_CD45:
+    source: bindcraft_targets
+    target_filename: CD45
+    target_path: ./assets/target_data/bindcraft_targets/CD45.pdb
+    target_input: A1-88
+    hotspot_residues: ["A4"]
+    binder_length: [80, 200]
+    pdb_id: null
+
+  09_CD45:
+    source: bindcraft_targets
+    target_filename: CD45
+    target_path: ./assets/target_data/bindcraft_targets/CD45.pdb
+    target_input: A1-88
+    hotspot_residues: ["A1", "A2"]
+    binder_length: [80, 200]
+    pdb_id: null
+
+  10_CD45:
+    source: bindcraft_targets
+    target_filename: CD45
+    target_path: ./assets/target_data/bindcraft_targets/CD45.pdb
+    target_input: A1-88
+    hotspot_residues: ["A2", "A3"]
+    binder_length: [80, 200]
+    pdb_id: null
+
+  11_CD45:
+    source: bindcraft_targets
+    target_filename: CD45
+    target_path: ./assets/target_data/bindcraft_targets/CD45.pdb
+    target_input: A1-88
+    hotspot_residues: ["A3", "A4"]
+    binder_length: [80, 200]
+    pdb_id: null
+
+  12_Claudin1:
+    source: bindcraft_targets
+    target_filename: CLDN1
+    target_path: ./assets/target_data/bindcraft_targets/CLDN1.pdb
+    target_input: A1-188
+    hotspot_residues: ["A31", "A46", "A55", "A152"]
+    binder_length: [80, 175]
+    pdb_id: null
+
+  13_BBF14:
+    source: bindcraft_targets
+    target_filename: BBF-14
+    target_path: ./assets/target_data/bindcraft_targets/BBF-14.pdb
+    target_input: A1-112
+    hotspot_residues: []
+    binder_length: [70, 250]
+    pdb_id: "9hag"
+
+  14_CrSAS6:
+    source: bindcraft_targets
+    target_filename: Sas6
+    target_path: ./assets/target_data/bindcraft_targets/Sas6.pdb
+    target_input: A1-145
+    hotspot_residues: []
+    binder_length: [90, 200]
+    pdb_id: null
+
+  15_DerF7:
+    source: bindcraft_targets
+    target_filename: DerF7
+    target_path: ./assets/target_data/bindcraft_targets/DerF7.pdb
+    target_input: A1-196
+    hotspot_residues: ["A115"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  16_DerF7:
+    source: bindcraft_targets
+    target_filename: DerF7
+    target_path: ./assets/target_data/bindcraft_targets/DerF7.pdb
+    target_input: A1-196
+    hotspot_residues: ["A161"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  17_DerF7:
+    source: bindcraft_targets
+    target_filename: DerF7
+    target_path: ./assets/target_data/bindcraft_targets/DerF7.pdb
+    target_input: A1-196
+    hotspot_residues: ["A184"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  18_DerF21:
+    source: bindcraft_targets
+    target_filename: DerF21
+    target_path: ./assets/target_data/bindcraft_targets/DerF21.pdb
+    target_input: A1-118
+    hotspot_residues: ["A10"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  19_DerF21:
+    source: bindcraft_targets
+    target_filename: DerF21
+    target_path: ./assets/target_data/bindcraft_targets/DerF21.pdb
+    target_input: A1-118
+    hotspot_residues: ["A28"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  20_DerF21:
+    source: bindcraft_targets
+    target_filename: DerF21
+    target_path: ./assets/target_data/bindcraft_targets/DerF21.pdb
+    target_input: A1-118
+    hotspot_residues: ["A63"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  21_DerF21:
+    source: bindcraft_targets
+    target_filename: DerF21
+    target_path: ./assets/target_data/bindcraft_targets/DerF21.pdb
+    target_input: A1-118
+    hotspot_residues: ["A81"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  22_DerF21:
+    source: bindcraft_targets
+    target_filename: DerF21
+    target_path: ./assets/target_data/bindcraft_targets/DerF21.pdb
+    target_input: A1-118
+    hotspot_residues: ["A92"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  23_BetV1:
+    source: bindcraft_targets
+    target_filename: BetV1
+    target_path: ./assets/target_data/bindcraft_targets/BetV1.pdb
+    target_input: A1-159
+    hotspot_residues: ["A24"]
+    binder_length: [70, 185]
+    pdb_id: null
+
+  24_SpCas9:
+    source: bindcraft_targets
+    target_filename: sCas9_cropped
+    target_path: ./assets/target_data/bindcraft_targets/sCas9_cropped.pdb
+    target_input: "A96-174,A306-446"
+    hotspot_residues: ["A360"]
+    binder_length: [70, 150]
+    pdb_id: null
+
+  25_CbAgo:
+    source: bindcraft_targets
+    target_filename: CbAgo_cropped_NPIWI
+    target_path: ./assets/target_data/bindcraft_targets/CbAgo_cropped_NPIWI.pdb
+    target_input: "A1-175,A298-343,A635-689"
+    hotspot_residues: ["A39"]
+    binder_length: [70, 160]
+    pdb_id: null
+
+  26_CbAgo:
+    source: bindcraft_targets
+    target_filename: CbAgo_cropped_PAZ
+    target_path: ./assets/target_data/bindcraft_targets/CbAgo_cropped_PAZ.pdb
+    target_input: A180-276
+    hotspot_residues: ["A268"]
+    binder_length: [70, 160]
+    pdb_id: null
+
+  27_HER2_AAV:
+    source: bindcraft_targets
+    target_filename: HER2_cropped
+    target_path: ./assets/target_data/bindcraft_targets/HER2_cropped.pdb
+    target_input: "C23-101,C111-268"
+    hotspot_residues: ["C170"]
+    binder_length: [60, 100]
+    pdb_id: "1n8z"
+
+  28_HER2_AAV:
+    source: bindcraft_targets
+    target_filename: HER2_cropped
+    target_path: ./assets/target_data/bindcraft_targets/HER2_cropped.pdb
+    target_input: "C23-101,C111-268"
+    hotspot_residues: ["C165", "C170"]
+    binder_length: [60, 100]
+    pdb_id: "1n8z"
+
+  29_BHRF1:
+    source: alpha_proteo_targets
+    target_filename: 2wh6_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/2wh6_cropped.pdb
+    target_input: A2-158
+    hotspot_residues: ["A65", "A74", "A77", "A82", "A85", "A93"]
+    binder_length: [80, 120]
+    pdb_id: "2wh6"
+
+  30_SC2RBD:
+    source: alpha_proteo_targets
+    target_filename: 6m0j_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/6m0j_cropped.pdb
+    target_input: E333-526
+    hotspot_residues: ["E485", "E489", "E494", "E500", "E505"]
+    binder_length: [80, 120]
+    pdb_id: "6m0j"
+
+  31_IL7RA:
+    source: alpha_proteo_targets
+    target_filename: 3di3_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/3di3_cropped.pdb
+    target_input: B17-209
+    hotspot_residues: ["B58", "B80", "B139"]
+    binder_length: [50, 120]
+    pdb_id: "3di3"
+
+  31_IL7RA_FIX:
+    source: alpha_proteo_targets
+    target_filename: 3di3_cropped_fixed
+    target_path: ./assets/target_data/alpha_proteo_targets/3di3_cropped_fixed.pdb
+    target_input: B17-209
+    hotspot_residues: ["B58", "B80", "B139"]
+    binder_length: [50, 120]
+    pdb_id: "3di3"
+
+  31_IL7RA_REPACK:
+    source: alpha_proteo_targets
+    target_filename: 3di3_repacked
+    target_path: ./assets/target_data/alpha_proteo_targets/3di3_repacked.pdb
+    target_input: B17-209
+    hotspot_residues: ["B58", "B80", "B139"]
+    binder_length: [50, 120]
+    pdb_id: "3di3"
+
+  32_PDL1_ALPHA:
+    source: alpha_proteo_targets
+    target_filename: 5o45_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/5o45_cropped.pdb
+    target_input: A17-132
+    hotspot_residues: ["A56", "A115", "A123"]
+    binder_length: [50, 120]
+    pdb_id: "5o45"
+
+  32_PDL1_ALPHA_FIX:
+    source: alpha_proteo_targets
+    target_filename: 5o45_cropped_fixed
+    target_path: ./assets/target_data/alpha_proteo_targets/5o45_cropped_fixed.pdb
+    target_input: A17-132
+    hotspot_residues: ["A56", "A115", "A123"]
+    binder_length: [50, 120]
+    pdb_id: "5o45"
+
+  32_PDL1_ALPHA_REPACK:
+    source: alpha_proteo_targets
+    target_filename: 5o45_repacked
+    target_path: ./assets/target_data/alpha_proteo_targets/5o45_repacked.pdb
+    target_input: A17-132
+    hotspot_residues: ["A56", "A115", "A123"]
+    binder_length: [50, 120]
+    pdb_id: "5o45"
+
+  33_TrkA:
+    source: alpha_proteo_targets
+    target_filename: 1www_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/1www_cropped.pdb
+    target_input: X282-382
+    hotspot_residues: ["X294", "X296", "X333"]
+    binder_length: [50, 120]
+    pdb_id: "1www"
+
+  34_Insulin:
+    source: alpha_proteo_targets
+    target_filename: 4zxb_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/4zxb_cropped.pdb
+    target_input: E6-155
+    hotspot_residues: ["E64", "E88", "E96"]
+    binder_length: [40, 120]
+    pdb_id: "4zxb"
+
+  35_H1:
+    source: alpha_proteo_targets
+    target_filename: 5vli_cropped_fixed
+    target_path: ./assets/target_data/alpha_proteo_targets/5vli_cropped_fixed.pdb
+    target_input: "A5-325,B501-670"
+    hotspot_residues: ["B521", "B545", "B552"]
+    binder_length: [40, 120]
+    pdb_id: "5vli"
+
+  36_VEGFA:
+    source: alpha_proteo_targets
+    target_filename: 1bj1_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/1bj1_cropped.pdb
+    target_input: "V14-107,W14-107"
+    hotspot_residues: ["W81", "W83", "W91"]
+    binder_length: [50, 140]
+    pdb_id: "1bj1"
+
+  37_IL17A:
+    source: alpha_proteo_targets
+    target_filename: 4hsa_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/4hsa_cropped.pdb
+    target_input: "A17-29,A41-131,B19-127"
+    hotspot_residues: ["A94", "A116", "B67"]
+    binder_length: [50, 140]
+    pdb_id: "4hsa"
+
+  38_TNFalpha:
+    source: alpha_proteo_targets
+    target_filename: 1tnf_cropped
+    target_path: ./assets/target_data/alpha_proteo_targets/1tnf_cropped.pdb
+    target_input: "A12-157,B12-157,C12-157"
+    hotspot_residues: ["A113", "C73"]
+    binder_length: [50, 120]
+    pdb_id: "1tnf"
+
+  38_TNFalpha_FIX:
+    source: alpha_proteo_targets
+    target_filename: 1tnf_cropped_fixed
+    target_path: ./assets/target_data/alpha_proteo_targets/1tnf_cropped_fixed.pdb
+    target_input: "A12-157,B12-157,C12-157"
+    hotspot_residues: ["A113", "C73"]
+    binder_length: [50, 120]
+    pdb_id: "1tnf"
+
+  38_TNFalpha_REPACK:
+    source: alpha_proteo_targets
+    target_filename: 1tnf_repacked
+    target_path: ./assets/target_data/alpha_proteo_targets/1tnf_repacked.pdb
+    target_input: "A12-157,B12-157,C12-157"
+    hotspot_residues: ["A113", "C73"]
+    binder_length: [50, 120]
+    pdb_id: "1tnf"

@@ -1,0 +1,81 @@
+defaults:
+  - base_gen_data
+  - _self_
+
+# General sampling params
+args:
+  # some params for sampling
+  nsteps: 200
+  self_cond: False
+  fold_cond: False
+  guidance_w: 1.0   # conditional model weights, 1.0 for conditional generation, 0.0 for unconditional generation. We typically set this value greater than 1
+  # Always set autoguidance as 0.0 during validation
+  ag_ratio: 0.0   # a value between 0 and 1, determining the proportion of autoguidance v.s. classifier-free guidance, 1.0 for all autoguidance, 0.0 for all CFG
+  ag_ckpt_path: null    # path to bad model checkpoint
+
+
+dataloader:
+  batch_size: 4
+  dataset:
+    nres: [50, 100]
+    nrepeat_per_sample: 4
+
+
+model:
+  temp_05:
+    bb_ca:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"  # tan, 1-t/t, 1/t
+        p: 1.0  # float
+        clamp_val: null  # float or null
+      simulation_step_params:
+        sampling_mode: sc  # Options are: vf (plain fow matching) or sc (using score, where parameters below matter)
+        sc_scale_noise: 0.5  # scale used to multiply noise if mode == sc
+        sc_scale_score: 1.0  # scale used to multiply score if mode == sc
+        t_lim_ode: 0.98  # At what point between 0 and 1 we switch to ODE with score scaling (for sc mode)
+        t_lim_ode_below: 0.02  # Before what point between 0 and 1 we use sc mode (for vf_ss mode)
+        center_every_step: True  # Whether to center the sample every step
+  ode:
+    bb_ca:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: vf
+        sc_scale_noise: 0.0
+        sc_scale_score: 0.0
+        t_lim_ode: 0.99
+        t_lim_ode_below: 0.02  # Before what point between 0 and 1 we use sc mode (for vf_ss mode)
+        center_every_step: True  # Whether to center the sample every step
+  temp_035:
+    bb_ca:
+      schedule:
+        mode: uniform
+        p: 1.0
+      gt:
+        mode: "tan"
+        p: 1.0
+        clamp_val: null
+      simulation_step_params:
+        sampling_mode: sc
+        sc_scale_noise: 0.35
+        sc_scale_score: 1.0
+        t_lim_ode: 0.99
+        t_lim_ode_below: 0.02  # Before what point between 0 and 1 we use sc mode (for vf_ss mode)
+        center_every_step: True  # Whether to center the sample every step
+
+# Sampling metrics
+metric:
+  # Designability
+  compute_designability: False
+
+  # Novelty
+  compute_novelty_pdb: False
+  compute_novelty_afdb: False

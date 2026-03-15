@@ -1,0 +1,111 @@
+# Motif Binder Evaluation Configuration
+#
+# Evaluates binder designs that also contain unindexed motif constraints.
+# Supports both protein targets (motif_protein_binder) and ligand targets (motif_ligand_binder).
+#
+# The config uses a combined motif_target_dict_cfg that contains both target
+# info (PDB path, ligand names) and motif info (contig_atoms or contig_string).
+#
+# Usage examples:
+#   # Motif ligand binder evaluation (AME-style)
+#   python evaluate.py --config-name evaluate_motif_binder \
+#       dataset.task_name=M0024_1nzy
+#
+#   # Motif protein binder evaluation
+#   python evaluate.py --config-name evaluate_motif_binder \
+#       dataset/motif_target_dict_cfg=my_protein_motif_dict \
+#       dataset.task_name=MY_TASK
+#
+#   # With both motif binder + standard binder eval
+#   python evaluate.py --config-name evaluate_motif_binder \
+#       metric.compute_binder_metrics=true
+
+defaults:
+  - /design_tasks/ame_dict_v2@dataset   # motif_target_dict_cfg lives here
+  - _self_
+
+# =============================================================================
+# Run identification
+# =============================================================================
+run_name: Complexa
+ckpt_path: Complexa
+ckpt_name: Complexa_ckpt
+baseline_model: null
+
+# =============================================================================
+# Evaluation configuration
+# =============================================================================
+protein_type: motif_binder
+input_mode: generated
+
+# =============================================================================
+# Path configuration
+# =============================================================================
+sample_storage_path: ./inference/motif_binder_TARGET
+output_dir: ./evaluation_results/motif_binder_eval
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+eval_njobs: 20
+job_id: 0
+dryrun: false
+show_progress: false
+
+# =============================================================================
+# Dataset: task selection
+# =============================================================================
+dataset:
+  task_name: M0024_1nzy   # Must match a key in motif_target_dict_cfg
+
+# =============================================================================
+# Metric configuration
+# =============================================================================
+metric:
+  # =========================================================================
+  # Motif binder metrics (main evaluation for this config)
+  # =========================================================================
+  compute_motif_binder_metrics: True
+
+  # Folding method for binder refolding
+  # Options: "colabdesign", "rf3_latest", "boltz2_default",
+  #          "protenix_base_default_v0.5.0", etc.
+  binder_folding_method: "rf3_latest"
+
+  # Inverse folding model
+  # Options: "protein_mpnn", "ligand_mpnn", "soluble_mpnn"
+  inverse_folding_model: ligand_mpnn
+
+  # Sequence types to evaluate
+  sequence_types: ["mpnn_fixed", "self"]
+
+  # Number of redesigned sequences
+  num_redesign_seqs: 1
+
+  # Interface cutoff (Angstroms)
+  interface_cutoff: 6.0
+
+  # Ranking criteria for binder component (null = use defaults based on target)
+  ranking_criteria: null
+
+  # Ranking criteria for binder component (null = use defaults based on target)
+  # Note: success criteria are NOT applied during evaluation — only raw metrics
+  # are stored. Success is determined in the analysis step.
+
+  # =========================================================================
+  # Optional: also run standard binder metrics (compatible)
+  # =========================================================================
+  compute_binder_metrics: False
+
+  # =========================================================================
+  # Optional: also run monomer metrics (compatible)
+  # =========================================================================
+  compute_monomer_metrics: False
+
+# =============================================================================
+# Aggregation settings
+# =============================================================================
+aggregation:
+  limit: null

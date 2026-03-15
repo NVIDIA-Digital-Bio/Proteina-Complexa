@@ -1,0 +1,99 @@
+# Monomer Evaluation Configuration
+#
+# Evaluates generated monomer structures for designability, secondary structure,
+# and optionally novelty.
+#
+# Usage:
+#   python -m proteinfoundation.evaluate --config-path ../../configs/pipeline --config-name monomer_evaluate
+#
+#   # With novelty checks:
+#   python -m proteinfoundation.evaluate --config-path ../../configs/pipeline --config-name monomer_evaluate \
+#     metric.compute_novelty_pdb=true
+
+defaults:
+  - _self_
+
+# # =============================================================================
+# # Run identification (metadata for output CSV)
+# # =============================================================================
+# run_name: null  # Set to null to avoid path modification
+# ckpt_path: null
+# ckpt_name: null
+
+# =============================================================================
+# Evaluation configuration
+# =============================================================================
+
+# protein_type: What kind of structures are being evaluated
+protein_type: monomer
+
+# input_mode: How to find input structures
+# - "generated": Model outputs with expected directory structure (job_X_*)
+# - "pdb_dir": Raw PDB files from sample_storage_path directory
+input_mode: generated
+
+# =============================================================================
+# Path configuration
+# =============================================================================
+
+# Where to find the samples to be evaluated
+sample_storage_path: ./inference/monomer_generate
+
+# Where to store the evaluation results
+output_dir: ./evaluation_results/monomer_eval
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+eval_njobs: 1
+job_id: 0
+
+# Dryrun mode - shows what would be executed without actually running
+dryrun: false
+
+# Show progress bars during evaluation
+show_progress: true
+
+# =============================================================================
+# Metric configuration
+# =============================================================================
+metric:
+  # =========================================================================
+  # Binder metrics - DISABLED for monomer evaluation
+  # =========================================================================
+  compute_binder_metrics: false
+
+  # =========================================================================
+  # Monomer metrics - ENABLED
+  # =========================================================================
+  compute_monomer_metrics: true
+
+  # Designability - evaluate structure quality via inverse folding + refolding
+  compute_designability: true
+  designability_modes: ["ca"]  # Options: "ca", "bb3o", "all_atom"
+  designability_folding_models: ["esmfold"]
+  designability_motif_eval: false
+
+  # Codesignability - evaluate using original sequence
+  compute_codesignability: true
+  codesignability_modes: ["ca", "all_atom"]
+  codesignability_folding_models: ["esmfold"]
+  codesignability_motif_eval: false
+
+  # Sequence recovery
+  compute_co_sequence_recovery: false
+
+  # Secondary structure proportions (alpha helix, beta sheet, coil)
+  compute_ss: true
+
+  # Novelty - compare to known structures (requires databases)
+  compute_novelty_pdb: false
+  compute_novelty_afdb: false
+  compute_novelty_afdb_rep_v4: false
+  compute_novelty_afdb_rep_v4_geniefilters_maxlen512: false
+
+  # Output control
+  keep_folding_outputs: false
+

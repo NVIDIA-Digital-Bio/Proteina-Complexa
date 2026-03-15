@@ -1,0 +1,53 @@
+# AME (Motif + Ligand Binder) Evaluation Configuration
+#
+# Evaluates motif binder designs: binder refolding + motif RMSD/sequence recovery.
+# motif_target_dict_cfg comes from generation config (via ame_generate)
+# =============================================================================
+# Evaluation mode
+# =============================================================================
+protein_type: motif_binder
+input_mode: generated
+dryrun: false
+show_progress: false
+
+metric:
+  compute_motif_binder_metrics: true
+
+  binder_folding_method: rf3_latest
+  sequence_types: [self, mpnn_fixed]
+  inverse_folding_model: ligand_mpnn
+
+  ranking_criteria: null
+  motif_ranking_criteria: null
+
+  #esm metrics
+  compute_esm_metrics: true
+  # ---------------------------------------------------------------------------
+  # Pre-refolding interface metrics (on generated structures)
+  # ---------------------------------------------------------------------------
+  compute_pre_refolding_metrics: false
+  pre_refolding:
+    bioinformatics: false  # Shape complementarity, SASA, hydrophobicity (requires sc/dssp binaries)
+    tmol: false            # TMOL force field (H-bonds, electrostatics)
+
+  # ---------------------------------------------------------------------------
+  # Post-refolding interface metrics (on refolded structures)
+  # ---------------------------------------------------------------------------
+  compute_refolded_structure_metrics: false
+  refolded:
+    bioinformatics: false
+    tmol: false
+
+  # ---------------------------------------------------------------------------
+  # Monomer metrics
+  # ---------------------------------------------------------------------------
+  compute_monomer_metrics: false
+  monomer_folding_models: [esmfold]
+
+  compute_designability: true
+  designability_modes: [ca]
+
+  compute_codesignability: true
+  codesignability_modes: [ca, all_atom]
+
+  keep_folding_outputs: true

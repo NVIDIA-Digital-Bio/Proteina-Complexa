@@ -1,0 +1,6 @@
+# Sweep over best-of-N replica counts.
+generation.search.best_of_n.replicas:
+  - 1
+  - 4
+  - 16
+  - 64

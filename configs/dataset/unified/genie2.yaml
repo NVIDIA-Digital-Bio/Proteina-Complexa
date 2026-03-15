@@ -1,0 +1,26 @@
+# Genie2 / AFDB Monomers - Unified DataModule config
+# Uses pre-processed AFDB structures for monomer training
+#
+# Pipeline: PDB/CIF → AtomArray → atomarray_transforms → atom37 Data → atom37_transforms → model
+
+datamodule:
+  _target_: proteinfoundation.datasets.structure_data.StructureDataModule
+  metadata_file: ${oc.env:DATA_PATH}/afdb_clustered_laproteina/afdb_proteina_512_direct.parquet
+  base_dir: ""  # Paths in parquet are absolute
+  batch_size: 6
+  num_workers: 16
+  train_split: 0.99
+  path_column: path
+  id_column: example_id
+  pin_memory: true
+  pad_max_total_tokens: null
+  
+  # atom37_transforms applied to Data object after conversion
+  atom37_transforms:
+    - _target_: proteinfoundation.datasets.transforms.CoordsToNanometers
+    - _target_: proteinfoundation.datasets.transforms.GlobalRotationTransform
+    - _target_: proteinfoundation.datasets.transforms.ChainBreakPerResidueTransform
+    - _target_: proteinfoundation.datasets.transforms.OpenFoldFrameTransform
+    - _target_: proteinfoundation.datasets.transforms.CenteringTransform
+      center_mode: "full"
+      data_mode: "all-atom"

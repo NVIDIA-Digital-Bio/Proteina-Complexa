@@ -1,0 +1,18 @@
+# Ligand Binder Pipeline Analysis Configuration
+#
+# Pairs with ligand_binder_evaluate.yaml for ligand_binder results.
+# target_dict_cfg comes from generation config (via ligand_binder_generate).
+#
+# Uses ligand-specific default thresholds (min_ipAE*31 < 2, scRMSD_ca < 2,
+# scRMSD_aligned_allatom < 5) instead of protein binder thresholds.
+
+result_type: ligand_binder
+dryrun: false
+
+aggregation:
+  limit: null
+
+  analysis_modes: [binder, monomer]
+
+  # null = use DEFAULT_LIGAND_BINDER_THRESHOLDS
+  # (min_ipAE*31 < 2, scRMSD_ca < 2, scRMSD_aligned_allatom < 5)

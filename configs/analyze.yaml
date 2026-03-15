@@ -1,0 +1,99 @@
+# Binder Analysis Configuration
+#
+# Pairs with evaluate.yaml for protein_binder results.
+#
+# Everything is auto-detected from the evaluation results:
+#   - sequence_types: detected from result column names
+#   - analysis_modes: defaults to [binder, monomer] for binder result types
+#   - thresholds: sensible built-in defaults
+#   - diversity: enabled by default
+
+result_type: protein_binder
+dryrun: false
+
+aggregation:
+  # Limit number of result files (null = all)
+  limit: null
+
+  # ---------------------------------------------------------------------------
+  # Analysis modes
+  # ---------------------------------------------------------------------------
+  # Which analysis functions to run. Can run multiple modes on the same data.
+  # Available modes:
+  #   - "binder": Pass rates, success filtering, interface metrics, binder diversity
+  #              (only valid for protein_binder/ligand_binder result_types)
+  #   - "monomer": Designability/codesignability pass rates, monomer diversity
+  #              (computes metrics on _res_scRMSD_{mode}_{model} columns)
+  #
+  # Default for protein_binder/ligand_binder: [binder, monomer]
+  # Override: analysis_modes: [binder]
+
+  # ---------------------------------------------------------------------------
+  # Success thresholds (for binder analysis mode)
+  # ---------------------------------------------------------------------------
+  # null = use defaults for result_type:
+  #   protein_binder: i_pAE*31 <= 7.0, pLDDT >= 0.9, scRMSD < 1.5
+  #
+  # Custom example:
+  # success_thresholds:
+  #   i_pAE:
+  #     threshold: 8.0
+  #     op: "<="
+  #     scale: 31.0
+  #     column_prefix: complex
+  #   pLDDT:
+  #     threshold: 0.85
+  #     op: ">="
+  #     scale: 1.0
+  #     column_prefix: complex
+  #   scRMSD:
+  #     threshold: 2.0
+  #     op: "<"
+  #     scale: 1.0
+  #     column_prefix: binder
+
+  # ---------------------------------------------------------------------------
+  # Monomer thresholds (for monomer analysis mode)
+  # ---------------------------------------------------------------------------
+  # Controls filtering and pass rate computation for the THREE monomer metrics:
+  #
+  # 1. CA DESIGNABILITY (designability_thresholds)
+  #    - Uses ProteinMPNN to redesign the generated structure with a new sequence
+  #    - Folds the redesigned sequence and computes CA backbone RMSD
+  #    - Column pattern: _res_scRMSD_ca_{model}
+  #    - Default threshold: 2.0 Angstrom
+  #
+  # 2. CA CODESIGNABILITY (ca_codesignability_thresholds)
+  #    - Folds the MODEL-GENERATED sequence (no ProteinMPNN)
+  #    - Computes CA backbone RMSD between folded and generated structures
+  #    - Column pattern: _res_co_scRMSD_ca_{model}
+  #    - Default threshold: 2.0 Angstrom
+  #
+  # 3. ALL-ATOM CODESIGNABILITY (allatom_codesignability_thresholds)
+  #    - Folds the MODEL-GENERATED sequence (no ProteinMPNN)
+  #    - Computes ALL-ATOM RMSD between folded and generated structures
+  #    - Column pattern: _res_co_scRMSD_all_atom_{model}
+  #    - Default threshold: 2.0 Angstrom
+  #
+  # Format: {mode: {model: {threshold, op}}}
+  # Available models: esmfold, colabfold (depends on what was computed during eval)
+  # null = auto-detect available modes/models from data and use default threshold of 2.0
+  #
+  # Custom example:
+  # designability_thresholds:
+  #   ca:
+  #     esmfold:
+  #       threshold: 1.5
+  #       op: "<="
+  #
+  # codesignability_thresholds:
+  #   ca:
+  #     esmfold:
+  #       threshold: 2.0
+  #       op: "<="
+  #   all_atom:
+  #     esmfold:
+  #       threshold: 2.0
+  #       op: "<="
+  #
+  # require_all_thresholds: false   # true = AND logic, false = OR logic

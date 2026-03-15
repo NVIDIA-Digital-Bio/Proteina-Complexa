@@ -1,0 +1,100 @@
+# Motif Binder Analysis Configuration
+#
+# Pairs with evaluate_motif_binder.yaml
+# (result_type: motif_protein_binder or motif_ligand_binder).
+#
+# Motif binder analysis evaluates combined binder + motif success: a sample
+# is "successful" when at least one redesign passes ALL binder criteria AND
+# ALL motif criteria simultaneously (joint evaluation per redesign index).
+#
+# Everything is auto-detected from the evaluation results:
+#   - sequence_types: detected from result column names
+#   - analysis_modes: defaults to [motif_binder, binder, monomer]
+#   - thresholds: sensible built-in defaults
+#   - diversity: enabled by default
+#
+# Usage:
+#   # Protein motif binder
+#   python analyze.py --config-name analyze_motif_binder \
+#       result_type=motif_protein_binder \
+#       results_dir=./evaluation_results/motif_binder_eval
+#
+#   # Ligand motif binder
+#   python analyze.py --config-name analyze_motif_binder \
+#       result_type=motif_ligand_binder \
+#       results_dir=./evaluation_results/motif_ligand_binder_eval
+
+result_type: motif_protein_binder
+dryrun: false
+
+aggregation:
+  # Limit number of result files (null = all)
+  limit: null
+
+  # ---------------------------------------------------------------------------
+  # Analysis modes
+  # ---------------------------------------------------------------------------
+  # Which analysis functions to run. Can run multiple modes on the same data.
+  # Available modes:
+  #   - "motif_binder": Combined binder+motif success, per-task pass rates,
+  #                     diversity on successful subsets
+  #   - "binder": Standard binder-only pass rates (ipAE, pLDDT, scRMSD)
+  #   - "monomer": Designability/codesignability pass rates
+  #
+  # Default for motif_protein_binder/motif_ligand_binder: [motif_binder, binder, monomer]
+  # Override: analysis_modes: [motif_binder]
+
+  # ---------------------------------------------------------------------------
+  # Motif binder success thresholds (combined binder + motif criteria)
+  # ---------------------------------------------------------------------------
+  # null = use defaults for the result_type:
+  #
+  #   motif_protein_binder defaults:
+  #     binder: i_pAE*31 <= 7.0, pLDDT >= 0.8, scRMSD_ca < 2.0
+  #     motif:  motif_rmsd_pred_all < 2.0, correct_motif_sequence_all >= 1.0
+  #
+  #   motif_ligand_binder defaults:
+  #     binder: scRMSD_bb3 <= 2.0
+  #     motif:  motif_rmsd_pred_all <= 1.5, correct_motif_sequence_all >= 1.0, has_ligand_clashes_all < 0.5
+  #
+  # Custom example (override both binder and motif criteria):
+  # motif_binder_success_thresholds:
+  #   binder:
+  #     i_pAE:
+  #       threshold: 8.0
+  #       op: "<="
+  #       scale: 31.0
+  #       column_prefix: complex
+  #     pLDDT:
+  #       threshold: 0.85
+  #       op: ">="
+  #       scale: 1.0
+  #       column_prefix: complex
+  #     scRMSD_ca:
+  #       threshold: 2.0
+  #       op: "<"
+  #       scale: 1.0
+  #       column_prefix: binder
+  #   motif:
+  #     - column: "{seq_type}_motif_rmsd_pred_all"
+  #       threshold: 1.5
+  #       op: "<"
+  #     - column: "{seq_type}_correct_motif_sequence_all"
+  #       threshold: 1.0
+  #       op: ">="
+
+  # ---------------------------------------------------------------------------
+  # Binder-only thresholds (for standalone binder analysis mode)
+  # ---------------------------------------------------------------------------
+  # Same format as analyze.yaml success_thresholds.
+  # null = use defaults for the underlying binder type.
+  # success_thresholds: null
+
+  # ---------------------------------------------------------------------------
+  # Monomer thresholds (for monomer analysis mode)
+  # ---------------------------------------------------------------------------
+  # Same format as analyze.yaml monomer thresholds.
+  # null = auto-detect available modes/models and use default threshold of 2.0
+  # designability_thresholds: null
+  # ca_codesignability_thresholds: null
+  # allatom_codesignability_thresholds: null

@@ -1,0 +1,38 @@
+# Monomer Generation + Evaluation Pipeline Configuration
+#
+# Unified config for monomer design: generation and evaluation settings in one file.
+# Used with generate_binder_inference_configs.py for sweeping over checkpoints/hyperparameters.
+#
+# Usage:
+#   # Generate configs for sweep
+#   python script_utils/generate_binder_inference_configs.py --unified \
+#       --infer_config_name monomer_pipeline --run_name my_run
+
+defaults:
+  - pipeline/monomer/monomer_generate@_global_
+  - pipeline/monomer/monomer_evaluate@_global_
+  - pipeline/monomer/monomer_analyze@_global_
+  - _self_
+
+# =============================================================================
+# Run identification (override from monomer_generate and monomer_evaluate)
+# =============================================================================
+run_name: test_complexa_rf_lpr_512_direct_6_bf16_nocompile
+ckpt_path: ${oc.env:CKPT_PATH}
+ckpt_name: null
+autoencoder_ckpt_path: null
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+gen_njobs: 10      # Number of parallel generation jobs
+eval_njobs: 10     # Number of parallel evaluation jobs (auto-aligned to gen_njobs)
+
+# =============================================================================
+# Overrides for pipeline mode (paths auto-set by config generator)
+# =============================================================================
+sample_storage_path: null
+output_dir: null
+show_progress: false

@@ -1,0 +1,62 @@
+# Monomer Motif Scaffolding Pipeline Configuration
+#
+# Modular config that combines all pipeline stages:
+#   - model_sampling: Model schedules, temperatures, noise
+#   - motif_generate: Search, motif features, filtering
+#   - motif_evaluate: Motif RMSD, designability, codesignability
+#   - motif_analyze: Pass rates, diversity
+#
+# Usage:
+#   complexa design configs/search_motif_local_pipeline.yaml ++run_name=motif_test ++generation.task_name=1YCR_AA
+#
+# Available motif tasks (from configs/design_tasks/motif_dict.yaml):
+#   All-atom:   1YCR_AA, 5TPN_AA, 1BCF_AA, 5IUS_AA, 3IXT_AA, 5YUI_AA,
+#               4JHW_AA, 5WN9_AA, 4ZYP_AA, 6VW1_AA, 1QJG_AA, etc.
+#   Tip-atoms:  1YCR_AA_TIP, 5TPN_AA_TIP, ... (same tasks with _TIP suffix)
+#   Multi-size: 7MRX_AA_60/85/128, 5TRV_AA_SHORT/MED/LONG, 6E6R_AA_SHORT/MED/LONG
+
+defaults:
+  - pipeline/motif/motif_generate@generation
+  - pipeline/motif/motif_evaluate@_global_
+  - pipeline/motif/motif_analyze@_global_
+  - _self_
+
+# =============================================================================
+# Environment variables (v2 architecture required for motif model)
+# =============================================================================
+env_vars:
+  USE_V2_COMPLEXA_ARCH: "False"
+
+# =============================================================================
+# Run identification
+# =============================================================================
+run_name: search_motif_local
+
+# --- Set these to your local checkpoint paths ---
+ckpt_path: ./ckpts
+ckpt_name: complexa_ame.ckpt
+autoencoder_ckpt_path: ./ckpts/complexa_ame_ae.ckpt
+
+# =============================================================================
+# LoRA (required for the motif/AME model checkpoint)
+# =============================================================================
+lora:
+  r: 32
+  lora_alpha: 64.0
+  lora_dropout: 0.0
+  train_bias: none
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+gen_njobs: 1
+eval_njobs: 1
+
+# =============================================================================
+# Hydra
+# =============================================================================
+hydra:
+  run:
+    dir: ./logs/hydra_outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}

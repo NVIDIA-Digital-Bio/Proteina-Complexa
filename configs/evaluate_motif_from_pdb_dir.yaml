@@ -1,0 +1,114 @@
+# Motif Evaluation from PDB Directory
+#
+# Evaluate monomer PDB files for motif scaffolding quality.
+# Use this when you have pre-generated PDB files (e.g., from external tools)
+# and want to measure motif RMSD, designability, and codesignability.
+#
+# Usage:
+#   # Run evaluate
+#   python -m proteinfoundation.evaluate --config-name evaluate_motif_from_pdb_dir
+#
+#   # Run analyze (after evaluate)
+#   python -m proteinfoundation.analyze --config-name evaluate_motif_from_pdb_dir
+#
+#   # Override task and PDB directory from CLI:
+#   python -m proteinfoundation.evaluate --config-name evaluate_motif_from_pdb_dir \
+#       sample_storage_path=/path/to/your/pdbs \
+#       dataset.motif_task_name=5TPN_AA
+#
+#   # Dryrun:
+#   python -m proteinfoundation.evaluate --config-name evaluate_motif_from_pdb_dir dryrun=true
+
+defaults:
+  - /design_tasks/motif_dict@dataset
+  - _self_
+
+# =============================================================================
+# Run identification
+# =============================================================================
+run_name: motif_pdb_dir_eval_1QJG_AA_NATIVE_test #1QJG_AA_TIP #1QJG_AA_NATIVE
+ckpt_path: external
+ckpt_name: external_ckpt
+
+# =============================================================================
+# Input settings
+# =============================================================================
+protein_type: monomer_motif
+input_mode: pdb_dir
+
+# Paths — set your PDB directory here
+sample_storage_path: /path/to/motif_results/1QJG_AA_NATIVE_test
+# /path/to/motif_results/1QJG_AA_TIP
+# /path/to/motif_results/1QJG_AA_NATIVE
+
+# Per-sample motif contig CSV (optional).
+# If null, auto-discovered next to sample_storage_path using the naming
+# convention {motif_task_name}_{job_id}_motif_info.csv.
+# Required for indexed mode (error if missing); ignored for unindexed mode.
+# motif_info_csv: /path/to/motif_results/1QJG_AA_NATIVE_test/1QJG_AA_NATIVE_0_motif_info.csv
+
+output_dir: ./evaluation_results/${run_name}
+file_limit: 2
+# Ignore certain PDB suffixes (e.g., intermediate files)
+ignore_generated_pdb_suffix: null
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+eval_njobs: 2
+dryrun: false
+show_progress: true
+
+# =============================================================================
+# Motif task configuration
+# =============================================================================
+# Select the task to evaluate. Must match an entry in design_tasks/motif_dict.yaml.
+# Override from CLI: dataset.motif_task_name=5TPN_AA
+dataset:
+  motif_task_name: 1QJG_AA_NATIVE #1QJG_AA_TIP
+  # Set unindexed=true when the motif is NOT placed at contig positions
+  # (greedy coordinate matching will be used instead)
+  unindexed: false #true
+
+# =============================================================================
+# Metric configuration
+# =============================================================================
+metric:
+  # Single flag: turns on motif RMSD, designability, codesignability,
+  # and their motif-region variants
+  compute_motif_metrics: true
+  motif_info_csv: ${oc.select:motif_info_csv,null}
+  # Shared folding model(s) for all monomer-style metrics
+  monomer_folding_models: [esmfold]
+
+  # Fine-grained controls (usually don't need to touch)
+  motif_rmsd_modes: [ca, all_atom]
+  designability_num_seq: 8
+  designability_modes: [ca]
+  codesignability_modes: [ca, all_atom]
+  compute_ss: true
+
+  compute_monomer_metrics: true
+  compute_binder_metrics: false
+  compute_novelty_pdb: false
+  compute_novelty_afdb: false
+  compute_novelty_afdb_rep_v4: false
+  keep_folding_outputs: true
+
+# =============================================================================
+# Analysis configuration (for analyze step)
+# =============================================================================
+result_type: monomer_motif
+
+aggregation:
+  # Sequence types to analyze (auto-detect from results)
+  sequence_types: null
+  
+  # Analysis modes: binder, monomer, or both
+  analysis_modes: [motif, monomer] #, monomer]
+  
+  # Diversity computation (shared across all analysis modes)
+  compute_diversity: true           # Structural diversity via FoldSeek
+  compute_mmseqs_diversity: true    # Sequence diversity via MMseqs2

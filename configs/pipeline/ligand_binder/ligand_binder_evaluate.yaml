@@ -1,0 +1,76 @@
+# Binder Evaluation Configuration
+#
+# All metric computation settings for evaluating generated binders.
+# Note: target_dict_cfg comes from generation config (via binder_generate)
+
+# =============================================================================
+# Evaluation mode
+# =============================================================================
+protein_type: binder # [monomer, binder]
+input_mode: generated
+dryrun: false
+show_progress: false
+
+# =============================================================================
+# Metrics
+# =============================================================================
+metric:
+  # ---------------------------------------------------------------------------
+  # Binder refolding metrics
+  # ---------------------------------------------------------------------------
+  compute_binder_metrics: true
+  
+  # Folding method: colabdesign, rf3_latest, boltz2_default, esmfold
+  binder_folding_method: rf3_latest
+  
+  # Sequence types: self (generated), mpnn (redesign all), mpnn_fixed (fixed interface)
+  sequence_types: [self, mpnn]
+  
+  # Inverse folding settings
+  num_redesign_seqs: 2
+  interface_cutoff: 8.0
+  inverse_folding_model: ligand_mpnn  # protein_mpnn, ligand_mpnn, soluble_mpnn
+  
+  #esm metrics
+  compute_esm_metrics: true
+  # Ranking criteria for best refolded sample (null = defaults)
+  ranking_criteria: null
+
+  # ---------------------------------------------------------------------------
+  # Pre-refolding interface metrics (on generated structures)
+  # ---------------------------------------------------------------------------
+  compute_pre_refolding_metrics: false
+  pre_refolding:
+    bioinformatics: false  # Shape complementarity, SASA, hydrophobicity (requires sc/dssp binaries)
+    tmol: false            # TMOL force field (H-bonds, electrostatics)
+
+  # ---------------------------------------------------------------------------
+  # Post-refolding interface metrics (on refolded structures)
+  # ---------------------------------------------------------------------------
+  compute_refolded_structure_metrics: false
+  refolded:
+    bioinformatics: false
+    tmol: false
+
+  # ---------------------------------------------------------------------------
+  # Monomer metrics (set compute_monomer_metrics to enable)
+  # ---------------------------------------------------------------------------
+  compute_monomer_metrics: true
+  monomer_folding_models: [esmfold]  # Shared across des/codes
+
+  compute_designability: true
+  designability_modes: [ca]
+
+  compute_codesignability: true
+  codesignability_modes: [ca, all_atom]
+
+  compute_co_sequence_recovery: false
+
+  # Novelty metrics
+  compute_novelty_pdb: false
+  compute_novelty_afdb: false
+  compute_novelty_afdb_rep_v4: false
+  compute_novelty_afdb_rep_v4_geniefilters_maxlen512: false
+
+  # Output control
+  keep_folding_outputs: false

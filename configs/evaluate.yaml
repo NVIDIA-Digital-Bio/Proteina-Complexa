@@ -1,0 +1,185 @@
+# Unified Evaluation Configuration (evaluate.py)
+# 
+# This config supports multiple metric types and protein types.
+#
+# Protein Types:
+#   - monomer: Single chain proteins
+#   - binder: Binder + target complexes (binder is last chain)
+#
+# Metrics (controlled via two top-level flags):
+#   - compute_monomer_metrics: Designability, codesignability, novelty, sequence recovery
+#   - compute_binder_metrics: Refolding metrics, interface analysis, force field metrics
+#
+# Input Modes:
+#   - generated: Model outputs with expected directory structure (job_X_*) [default]
+#   - pdb_dir: Raw PDB files from a directory
+#
+# Usage examples:
+#   # Standard binder evaluation on model outputs
+#   python evaluate.py --config-name evaluate
+#
+#   # Monomer metrics on binder chain + binder metrics
+#   python evaluate.py --config-name evaluate metric.compute_monomer_metrics=true
+#
+#   # Monomer evaluation on unconditioned generation
+#   python evaluate.py --config-name evaluate protein_type=monomer metric.compute_monomer_metrics=true metric.compute_binder_metrics=false
+#
+#   # Evaluate raw PDB directory (external sources like BindCraft)
+#   python evaluate.py --config-name evaluate input_mode=pdb_dir sample_storage_path=/path/to/pdbs
+
+defaults:
+  - /targets/targets_dict@dataset
+  - _self_
+
+# =============================================================================
+# Run identification
+# =============================================================================
+run_name: Complexa
+ckpt_path: Complexa
+ckpt_name: Complexa_ckpt
+
+# Optional: Override model name from command line (defaults to null/None)
+baseline_model: null
+
+# =============================================================================
+# Evaluation configuration
+# =============================================================================
+
+# protein_type: What kind of structures are being evaluated
+# - "monomer": Single chain proteins
+# - "binder": Binder + target complexes (binder is last chain by convention)
+protein_type: binder
+
+# input_mode: How to find input structures
+# - "generated": Model outputs with expected directory structure (job_X_*) [default]
+# - "pdb_dir": Raw PDB files from sample_storage_path directory
+input_mode: generated
+
+# =============================================================================
+# Path configuration
+# =============================================================================
+# Where to find the samples to be evaluated
+sample_storage_path: ./inference/search_binder_TARGET
+
+# Where to store the evaluation results
+output_dir: ./evaluation_results/binder_eval
+
+# Suffix to ignore when finding PDB files (for pdb_dir mode)
+ignore_generated_pdb_suffix: "_binder.pdb"
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+eval_njobs: 20  # Number of parallel evaluation jobs (match gen_njobs)
+job_id: 0       # Current job ID (0-indexed), set via command line for multi-job
+
+# Dryrun mode - shows what would be executed without actually running
+dryrun: false
+
+# Show progress bars during evaluation (default: false for cleaner logs)
+show_progress: false
+
+# =============================================================================
+# Target configuration (required for binder benchmark)
+# =============================================================================
+dataset:
+  task_name: COM03_NIPAH
+
+# =============================================================================
+# Metric configuration
+# =============================================================================
+metric:
+  # =========================================================================
+  # Binder metrics (benchmark: binder)
+  # =========================================================================
+  compute_binder_metrics: True
+  
+  # Folding method for binder evaluation
+  # Options: "colabdesign", "rf3_latest", "boltz2_default", "esmfold", 
+  #          "protenix_base_default_v0.5.0", etc.
+  binder_folding_method: "colabdesign"
+  
+  # Sequence types to evaluate
+  # Options: "self" (use generated sequence), "mpnn" (redesign all), 
+  #          "mpnn_fixed" (redesign with fixed interface)
+  sequence_types: ["self"]
+  
+  # Number of redesigned sequences from ProteinMPNN/LigandMPNN
+  num_redesign_seqs: 8
+  
+  # Interface cutoff distance (Angstroms)
+  interface_cutoff: 8.0
+  
+  # Inverse folding model
+  # Options: "protein_mpnn", "ligand_mpnn", "soluble_mpnn"
+  inverse_folding_model: soluble_mpnn
+  
+  # Ranking criteria for selecting best refolded sample
+  # Each metric has: scale (weight), direction ("minimize" or "maximize")
+  # Composite score = sum(metric_value * scale * direction_sign)
+  # If null, uses default criteria based on target type (protein vs ligand)
+  # Example for multi-metric ranking:
+  #   ranking_criteria:
+  #     i_pAE:
+  #       scale: 1.0
+  #       direction: minimize
+  #     pLDDT:
+  #       scale: 0.5
+  #       direction: maximize
+  ranking_criteria: null
+  
+  # Pre-refolding metrics (on generated structures before refolding)
+  # Each metric type can be independently enabled/disabled
+  compute_pre_refolding_metrics: False
+  pre_refolding:
+    bioinformatics: True   # Shape complementarity, SASA, hydrophobicity
+    tmol: True             # TMOL force field (H-bonds, electrostatics)
+  
+  # Post-refolding metrics (on successful refolded structures)
+  # Same granular control as pre-refolding
+  compute_refolded_structure_metrics: False
+  refolded:
+    bioinformatics: True
+    tmol: True
+  
+  # =========================================================================
+  # Monomer metrics (set compute_monomer_metrics to enable)
+  # =========================================================================
+  compute_monomer_metrics: False
+
+  # Shared folding model(s) for all monomer-style metrics (des + codes).
+  # Override per-metric with designability_folding_models / codesignability_folding_models.
+  monomer_folding_models: ["esmfold"]
+  
+  # Designability - evaluate structure quality via inverse folding + refolding
+  compute_designability: False
+  designability_num_seq: 8  # Number of sequences to redesign with ProteinMPNN
+  designability_modes: ["ca"]  # Options: "ca", "bb3o", "all_atom"
+  
+  # Codesignability - evaluate using original sequence
+  compute_codesignability: False
+  codesignability_modes: ["ca", "all_atom"]
+  
+  # Sequence recovery
+  compute_co_sequence_recovery: False
+  
+  # Secondary structure proportions (alpha helix, beta sheet, coil) via biotite
+  compute_ss: true
+  
+  # Novelty - compare to known structures
+  compute_novelty_pdb: False
+  compute_novelty_afdb: False
+  compute_novelty_afdb_rep_v4: False
+  compute_novelty_afdb_rep_v4_geniefilters_maxlen512: False
+  
+  # Output control
+  keep_folding_outputs: False
+
+# =============================================================================
+# Aggregation settings (for post-processing)
+# =============================================================================
+aggregation:
+  limit: null  # Optional: Limit number of result files to process
+  filter_by_avg_ipsae: 0.0  # Filter by average ipsae (0 = no filtering)

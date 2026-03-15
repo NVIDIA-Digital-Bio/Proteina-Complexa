@@ -1,0 +1,106 @@
+# AME (Motif Binder) Evaluation from PDB Directory
+#
+# Evaluate motif ligand binder (AME) PDB files for binder quality + motif metrics.
+# Use this when you have pre-generated PDB files (e.g., from external tools)
+# and want to run the full motif binder evaluation pipeline.
+#
+# Usage:
+#   # Run evaluate
+#   python -m proteinfoundation.evaluate --config-name evaluate_ame_from_pdb_dir
+#
+#   # Override task and PDB directory from CLI:
+#   python -m proteinfoundation.evaluate --config-name evaluate_ame_from_pdb_dir \
+#       sample_storage_path=/path/to/your/pdbs \
+#       dataset.task_name=M0040_13pk
+#
+#   # Dryrun:
+#   python -m proteinfoundation.evaluate --config-name evaluate_ame_from_pdb_dir dryrun=true
+
+defaults:
+  - /design_tasks/ame_dict_v2@dataset   # motif_target_dict_cfg lives here
+  - _self_
+
+# =============================================================================
+# Run identification python -m proteinfoundation.evaluate --config-name evaluate_ame_from_pdb_dir
+# =============================================================================
+run_name: ame_pdb_dir_eval_M0024_1nzy #M0096_1chm #M0024_1nzy
+ckpt_path: external
+ckpt_name: external_ckpt
+
+# =============================================================================
+# Input settings
+# =============================================================================
+protein_type: motif_binder
+input_mode: pdb_dir
+
+# Paths — set your PDB directory here
+sample_storage_path: ./.samples/m0024_test #./ame_test_data/m0096
+output_dir: ./evaluation_results/${run_name}
+
+# Limit number of PDB files to evaluate (null = all)
+file_limit: null #2
+# Ignore certain PDB suffixes (e.g., intermediate files)
+ignore_generated_pdb_suffix: null
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+eval_njobs: 1
+dryrun: false
+show_progress: true
+
+# =============================================================================
+# Dataset: task selection
+# =============================================================================
+dataset:
+  task_name: M0024_1nzy #M0096_1chm #M0024_1nzy   # Must match a key in motif_target_dict_cfg
+
+# =============================================================================
+# Metric configuration
+# =============================================================================
+metric:
+  # =========================================================================
+  # Motif binder metrics (main evaluation for this config)
+  # =========================================================================
+  compute_motif_binder_metrics: True
+
+  # Folding method — RF3 for ligand targets, colabdesign/AF2 for protein targets.
+  binder_folding_method: "rf3_latest"
+
+  # Sequence types to evaluate
+  sequence_types: ["mpnn_fixed", "self"]
+
+  # Number of redesigned sequences
+  num_redesign_seqs: 2
+
+  # Interface cutoff (Angstroms)
+  interface_cutoff: 6.0
+
+  # Inverse folding model
+  # Options: "protein_mpnn", "ligand_mpnn", "soluble_mpnn"
+  inverse_folding_model: ligand_mpnn
+
+  # Ranking criteria (null = use defaults based on target type)
+  ranking_criteria: null
+
+  # =========================================================================
+  # Optional: also run standard binder metrics (compatible)
+  # =========================================================================
+  compute_binder_metrics: False
+
+  # =========================================================================
+  # Optional: also run monomer metrics (compatible)
+  # =========================================================================
+  compute_monomer_metrics: False
+
+  # Motif eval is NOT compatible with motif_binder
+  compute_motif_metrics: False
+
+# =============================================================================
+# Aggregation settings
+# =============================================================================
+result_type: motif_ligand_binder
+aggregation:
+  limit: null

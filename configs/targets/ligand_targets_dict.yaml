@@ -1,0 +1,48 @@
+target_dict_cfg:
+  39_7V11_LIGAND:
+    source: ligand_targets
+    target_filename: 7v11_ligand_centered
+    target_path: ./assets/target_data/ligand_targets/7v11_ligand_centered.pdb
+    hotspot_residues: [null]
+    binder_length: [100]
+    pdb_id: 7v11
+    ligand: 'OQO'
+    ligand_only: True
+    SMILES: "Fc1c(Cl)ccc(n2cnnn2)c1c1c[n+]([O-])c(cc1)C(CC1CC1)n1cc(cn1)c1ccc(N)nc1C"
+    use_bonds_from_file: True
+
+  40_5SDV_LIGAND:
+    source: ligand_targets
+    target_filename: 5SDV_ligand_centered
+    target_path: ./assets/target_data/ligand_targets/5SDV_ligand_centered.pdb
+    hotspot_residues: [null]
+    binder_length: [100]
+    pdb_id: 5SDV
+    ligand: 'IAI'
+    ligand_only: True
+    SMILES: "O=C(NCc1cocn1)c1cnn(C)c1C(=O)Nc1ccn2cc(nc2n1)c1ccccc1"
+    use_bonds_from_file: True
+
+  41_7BKC_LIGAND:
+    source: ligand_targets
+    target_filename: 7BKC_ligand_centered
+    target_path: ./assets/target_data/ligand_targets/7BKC_ligand_centered.pdb
+    hotspot_residues: [null]
+    binder_length: [100]
+    pdb_id: 7BKC
+    ligand: 'FAD'
+    ligand_only: True
+    SMILES: "O=C2C3=Nc1cc(c(cc1N(C3=NC(=O)N2)CC(O)C(O)C(O)COP(=O)(O)OP(=O)(O)OCC6OC(n5cnc4c(ncnc45)N)C(O)C6O)C)C"
+    use_bonds_from_file: True
+
+  42_7C7M_LIGAND:
+    source: ligand_targets
+    target_filename: 7C7M_ligand_centered
+    target_path: ./assets/target_data/ligand_targets/7C7M_ligand_centered.pdb
+    hotspot_residues: [null]
+    binder_length: [100]
+    pdb_id: 7C7M
+    ligand: 'SAM'
+    ligand_only: True
+    SMILES: "[O-]C(=O)C(N)CC[S+](C)CC3OC(n2cnc1c(ncnc12)N)C(O)C3O"
+    use_bonds_from_file: True

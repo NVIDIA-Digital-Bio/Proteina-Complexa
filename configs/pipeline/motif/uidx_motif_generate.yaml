@@ -1,0 +1,97 @@
+# Unindexed Monomer Motif Scaffolding — Generation
+#
+# The model receives only motif atoms (no scaffold padding). It does NOT
+# encode motif position — evaluation uses greedy coordinate matching to
+# find where the motif ended up in the generated structure.
+#
+# Scaffold length is controlled by nres (UniformInt), not by the contig string.
+# MotifFeatures with padding=False strips scaffold padding after generation.
+#
+# Motif tasks: configs/design_tasks/motif_dict.yaml
+# Pipeline:    configs/search_motif_uidx_local_pipeline.yaml
+
+defaults:
+  - /design_tasks/motif_dict@_here_
+  - /pipeline/base_gen_data@_here_
+  - /pipeline/model_sampling@_here_
+  - _self_
+
+# =============================================================================
+# Task and dataloader
+# =============================================================================
+task_name: 1YCR_AA
+
+dataloader:
+  batch_size: 5
+  dataset:
+    task_name: ${...task_name}
+    nres:
+      _target_: proteinfoundation.datasets.gen_dataset.UniformInt
+      low: ${....motif_dict_cfg.${..task_name}.motif_min_length}
+      high: ${....motif_dict_cfg.${..task_name}.motif_max_length}
+      nsamples: 100
+      endpoint: true
+    nrepeat_per_sample: 1
+    conditional_features:
+      - _target_: proteinfoundation.datasets.gen_dataset.MotifFeatures
+        task_name: ${...task_name}
+        pdb_path: ${.....motif_dict_cfg.${.task_name}.motif_pdb_path}
+        atom_selection_mode: ${.....motif_dict_cfg.${.task_name}.atom_selection_mode}
+        contig_string: ${.....motif_dict_cfg.${.task_name}.contig_string}
+        motif_only: ${.....motif_dict_cfg.${.task_name}.motif_only}
+        min_length: ${.....motif_dict_cfg.${.task_name}.motif_min_length}
+        max_length: ${.....motif_dict_cfg.${.task_name}.motif_max_length}
+        segment_order: ${.....motif_dict_cfg.${.task_name}.segment_order}
+        padding: False
+    transforms:
+      - _target_: proteinfoundation.datasets.transforms.CoordsTensorCenteringTransform
+        tensor_name: "x_motif"
+        mask_name: "motif_mask"
+        data_mode: "all-atom"
+
+# =============================================================================
+# Search algorithm
+# =============================================================================
+search:
+  algorithm: single-pass
+  max_batch_size: ${..dataloader.batch_size}
+  reward_threshold: null
+  step_checkpoints: [0, 100, 200, 300, 400]
+
+  best_of_n:
+    replicas: 2
+
+  beam_search:
+    n_branch: 4
+    beam_width: 4
+    keep_lookahead_samples: true
+    save_intermediate_states: false
+
+  fk_steering:
+    n_branch: 4
+    beam_width: 4
+    temperature: 0.1
+    keep_lookahead_samples: true
+
+  mcts:
+    n_simulations: 20
+    exploration_prob: 0.5
+    exploration_constant: 1.0
+    keep_lookahead_samples: true
+
+# =============================================================================
+# Refinement (disabled by default)
+# =============================================================================
+refinement:
+  algorithm: null
+  refine_targets: final
+  save_pre_refinement: none
+
+# =============================================================================
+# Post-generation filtering (no reward model → no filtering)
+# =============================================================================
+filter:
+  filter_samples_limit: null
+  delete_non_top_n_samples: false
+  dedup_sequence: true
+  reward_threshold: null

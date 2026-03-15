@@ -1,0 +1,32 @@
+# AFDB monomers dataset configuration
+# Use this after exporting foldcomp database to CIF files
+
+defaults:
+  - base
+
+datamodule:
+  metadata_file: ${oc.env:DATA_PATH}/afdb_cifs/metadata.parquet
+  filters:
+    - "length < 512"
+    - "plddt > 70"
+  columns_to_load:
+    - example_id
+    - path
+    - length
+    - plddt
+  
+  # Crop settings for monomers
+  crop_contiguous_probability: 0.5
+  crop_spatial_probability: 0.5
+
+
+
+
+
+
+
+
+
+
+
+

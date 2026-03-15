@@ -1,0 +1,15 @@
+# Sweep over backbone CA sampling noise scale ("temperature").
+#
+# Higher sc_scale_noise → more stochastic / diverse backbones.
+# Lower  sc_scale_noise → tighter, more deterministic structures.
+#
+# 2 values → 2 configs generated.
+#
+# Usage:
+  # ./slurm_utils/launch_protein_binder_search.sh \
+  #     --sweeper configs/sweeps/bb_ca_temperature.yaml \
+  #     --override generation.task_name=22_DerF21
+
+generation.model.bb_ca.simulation_step_params.sc_scale_noise:
+  - 0.1
+  - 0.4

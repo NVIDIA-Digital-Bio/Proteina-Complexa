@@ -1,0 +1,37 @@
+# Monomer Motif Scaffolding Analysis Configuration
+#
+# Pairs with motif_evaluate.yaml for monomer_motif results.
+# motif_dict_cfg comes from generation config (via motif_generate).
+#
+# Analysis includes:
+#   - Motif RMSD pass rates (CA + all-atom)
+#   - Designability/codesignability pass rates
+#   - Motif-region designability/codesignability pass rates
+#   - Sequence recovery statistics
+#   - Structural diversity (Foldseek) and sequence diversity (MMseqs2)
+
+result_type: monomer_motif
+dryrun: false
+
+aggregation:
+  limit: null
+
+  # Analysis modes: motif computes motif-specific pass rates and diversity
+  analysis_modes: [motif]
+
+  # Diversity computation
+  compute_diversity: true
+  compute_mmseqs_diversity: false
+
+  # ---------------------------------------------------------------------------
+  # All settings below are optional — override only when needed
+  # ---------------------------------------------------------------------------
+  # Threshold overrides (null = use built-in defaults):
+  # motif_rmsd_thresholds:
+  #   ca: {threshold: 1.0, op: "<"}
+  #   all_atom: {threshold: 2.0, op: "<"}
+  # designability_thresholds: null
+  # codesignability_thresholds: null
+  # motif_region_designability_thresholds: null
+  # motif_region_codesignability_thresholds: null
+  # motif_seq_rec_threshold: null

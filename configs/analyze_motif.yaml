@@ -1,0 +1,44 @@
+# Motif Analysis Configuration
+#
+# Pairs with evaluate_motif.yaml (result_type: monomer_motif).
+#
+# Everything is auto-detected from the evaluation results:
+#   - folding_model: detected from result column names (e.g. _res_scRMSD_ca_esmfold)
+#   - analysis_modes: defaults to [motif] for monomer_motif
+#   - thresholds: sensible built-in defaults
+#   - diversity: enabled by default
+#
+# Usage:
+#   python analyze.py --config-name analyze_motif \
+#       results_dir=./evaluation_results/motif_eval
+
+result_type: monomer_motif
+dryrun: false
+
+aggregation:
+  # Limit number of result files (null = all)
+  limit: null
+
+  # ---------------------------------------------------------------------------
+  # All settings below are optional — override only when needed
+  # ---------------------------------------------------------------------------
+  # folding_model: esmfold              # override auto-detection
+  # analysis_modes: [motif, monomer]    # default: [motif, monomer]
+  # compute_diversity: true             # default: true
+  # compute_mmseqs_diversity: true      # default: true
+  #
+  # Threshold overrides (null = use built-in defaults):
+  # motif_rmsd_thresholds:
+  #   ca: {threshold: 1.0, op: "<"}
+  #   all_atom: {threshold: 2.0, op: "<"}
+  # designability_thresholds: null
+  # codesignability_thresholds: null
+  # motif_region_designability_thresholds: null
+  # motif_region_codesignability_thresholds: null
+  # motif_seq_rec_threshold: null
+  #
+  # Custom success criterion (added alongside the two defaults):
+  # motif_success_criteria:
+  #   - column: "_res_motif_rmsd_ca"
+  #     threshold: 0.5
+  #     op: "<"

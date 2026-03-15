@@ -1,0 +1,157 @@
+# Motif Evaluation Configuration (evaluate.py)
+#
+# This config runs monomer_motif evaluation: motif RMSD, motif-aware
+# designability/codesignability, and standard monomer metrics.
+#
+# The motif task is selected via dataset.motif_task_name, which indexes into
+# dataset.motif_dict_cfg (loaded from design_tasks/motif_dict.yaml).
+# This mirrors the binder pattern: dataset.task_name + dataset.target_dict_cfg.
+#
+# Usage examples:
+#   # Standard motif evaluation with default task
+#   python evaluate.py --config-name evaluate_motif
+#
+#   # Override motif task from CLI
+#   python evaluate.py --config-name evaluate_motif \
+#       dataset.motif_task_name=5TPN_AA
+#
+#   # Run both monomer and motif evaluation
+#   python evaluate.py --config-name evaluate_motif \
+#       metric.compute_monomer_metrics=true
+#
+#   # Evaluate raw PDB directory (external samples)
+#   python evaluate.py --config-name evaluate_motif \
+#       input_mode=pdb_dir sample_storage_path=/path/to/pdbs
+#
+#   # Dryrun to see what would be computed
+#   python evaluate.py --config-name evaluate_motif dryrun=true
+
+defaults:
+  - /design_tasks/motif_dict@dataset
+  - _self_
+
+# =============================================================================
+# Run identification
+# =============================================================================
+run_name: Complexa
+ckpt_path: Complexa
+ckpt_name: Complexa_ckpt
+
+# Optional: Override model name from command line (defaults to null/None)
+baseline_model: null
+
+# =============================================================================
+# Evaluation configuration
+# =============================================================================
+
+# protein_type: monomer_motif for motif scaffolding evaluation
+protein_type: monomer_motif
+
+# input_mode: How to find input structures
+# - "generated": Model outputs with expected directory structure (job_X_*) [default]
+# - "pdb_dir": Raw PDB files from sample_storage_path directory
+input_mode: generated
+
+# =============================================================================
+# Path configuration
+# =============================================================================
+# Where to find the samples to be evaluated
+sample_storage_path: ./inference/motif_eval
+
+# Where to store the evaluation results
+output_dir: ./evaluation_results/motif_eval
+
+# Suffix to ignore when finding PDB files (for pdb_dir mode)
+ignore_generated_pdb_suffix: null
+
+# =============================================================================
+# Motif task configuration
+# =============================================================================
+# dataset.motif_dict_cfg is loaded from design_tasks/motif_dict.yaml via defaults.
+# Select the task to evaluate here. Override from CLI as needed.
+dataset:
+  motif_task_name: 1YCR_AA
+  # Set unindexed=true when the motif is NOT placed at contig positions
+  # (greedy coordinate matching will be used instead)
+  unindexed: false
+
+# =============================================================================
+# Job management
+# =============================================================================
+ncpus_: 24
+seed: 5
+eval_njobs: 1   # Number of parallel evaluation jobs (match gen_njobs)
+job_id: 0       # Current job ID (0-indexed), set via command line for multi-job
+
+# Dryrun mode - shows what would be executed without actually running
+dryrun: false
+
+# Show progress bars during evaluation (default: false for cleaner logs)
+show_progress: false
+
+# =============================================================================
+# Metric configuration
+# =============================================================================
+metric:
+  # =========================================================================
+  # Motif metrics (primary evaluation mode)
+  # =========================================================================
+  # Single flag that turns on all motif evaluation:
+  #   - Direct motif RMSD (generated vs ground truth)
+  #   - Designability (ProteinMPNN + fold, with motif positions fixed)
+  #   - Motif-region designability (scRMSD over motif residues only)
+  #   - Codesignability (fold PDB sequence)
+  #   - Motif-region codesignability (scRMSD over motif residues only)
+  #
+  # Individual sub-flags (compute_motif_rmsd, compute_designability, etc.)
+  # can still override to false if needed.
+  compute_motif_metrics: True
+
+  # =========================================================================
+  # Shared folding model(s) for all monomer-style metrics
+  # =========================================================================
+  # Used by designability, codesignability, and motif-region variants.
+  # Override per-metric with designability_folding_models / codesignability_folding_models.
+  monomer_folding_models: ["esmfold"]
+
+  # =========================================================================
+  # Per-sample contig CSV (auto-discovered for generated mode)
+  # =========================================================================
+  # For generated mode, auto-discovered as {task_name}_{job_id}_motif_info.csv.
+  # For pdb_dir mode, set this to the CSV path. The CSV must have a 'contig'
+  # column; if it also has a 'filename' column, matching is by PDB basename
+  # (any order), otherwise rows must match sorted PDB file order.
+  # Not needed for unindexed mode.
+  # motif_info_csv: /path/to/motif_info.csv
+
+  # =========================================================================
+  # Fine-grained controls (usually you don't need to touch these)
+  # =========================================================================
+  motif_rmsd_modes: ["ca", "all_atom"]  # CA auto-fills 0.0 for non-all_atom tasks
+  designability_num_seq: 8              # Sequences to redesign with ProteinMPNN
+  designability_modes: ["ca"]           # Options: "ca", "bb3o", "all_atom"
+  codesignability_modes: ["ca", "all_atom"]
+
+  # Secondary structure proportions (alpha helix, beta sheet, coil) via biotite
+  compute_ss: true
+
+  # =========================================================================
+  # Monomer metrics (optional, disabled by default for motif runs)
+  # Set compute_monomer_metrics=true to also run standard monomer evaluation
+  # =========================================================================
+  compute_monomer_metrics: False
+  compute_co_sequence_recovery: False
+
+  # Novelty - compare to known structures
+  compute_novelty_pdb: False
+  compute_novelty_afdb: False
+  compute_novelty_afdb_rep_v4: False
+  compute_novelty_afdb_rep_v4_geniefilters_maxlen512: False
+
+  # =========================================================================
+  # Binder metrics (incompatible with motif)
+  # =========================================================================
+  compute_binder_metrics: False
+
+  # Output control
+  keep_folding_outputs: False
