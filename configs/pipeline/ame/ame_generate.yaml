@@ -28,11 +28,11 @@ dataloader:
     conditional_features:
       - _target_: proteinfoundation.datasets.gen_dataset.MotifFeatures
         task_name: ${...task_name}
-        pdb_path: ${oc.env:DATA_PATH}/target_data/${.....motif_target_dict_cfg.${.task_name}.source}/${.....motif_target_dict_cfg.${.task_name}.target_filename}.pdb
+        pdb_path: ${oc.select:.....motif_target_dict_cfg.${.task_name}.target_path,${oc.env:DATA_PATH}/target_data/${.....motif_target_dict_cfg.${.task_name}.source}/${.....motif_target_dict_cfg.${.task_name}.target_filename}.pdb}
         motif_atom_spec: ${.....motif_target_dict_cfg.${.task_name}.contig_atoms}
       - _target_: proteinfoundation.datasets.gen_dataset.LigandFeatures
         task_name: ${...task_name}
-        pdb_path: ${oc.env:DATA_PATH}/target_data/${.....motif_target_dict_cfg.${.task_name}.source}/${.....motif_target_dict_cfg.${.task_name}.target_filename}.pdb
+        pdb_path: ${oc.select:.....motif_target_dict_cfg.${.task_name}.target_path,${oc.env:DATA_PATH}/target_data/${.....motif_target_dict_cfg.${.task_name}.source}/${.....motif_target_dict_cfg.${.task_name}.target_filename}.pdb}
         ligand: ${.....motif_target_dict_cfg.${.task_name}.ligand}
     transforms:
       # Center both motif and ligand at the motif center of mass

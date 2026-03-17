@@ -27,7 +27,7 @@ dataloader:
     conditional_features:
       - _target_: proteinfoundation.datasets.gen_dataset.LigandFeatures
         task_name: ${...task_name}
-        pdb_path: ${oc.env:DATA_PATH}/target_data/${.....target_dict_cfg.${.task_name}.source}/${.....target_dict_cfg.${.task_name}.target_filename}.pdb
+        pdb_path: ${oc.select:.....target_dict_cfg.${.task_name}.target_path,${oc.env:DATA_PATH}/target_data/${.....target_dict_cfg.${.task_name}.source}/${.....target_dict_cfg.${.task_name}.target_filename}.pdb}
         ligand: ${.....target_dict_cfg.${.task_name}.ligand}
         ligand_only: ${.....target_dict_cfg.${.task_name}.ligand_only}
         SMILES: ${.....target_dict_cfg.${.task_name}.SMILES}
@@ -98,7 +98,7 @@ reward_model:
         max_ipSAE: 0.0
         avg_ipSAE: 0.0
 
-    # TMOL reward model (optional)
+    # # TMOL reward model (TMOL support for ligand binders is not supported yet)
     # tmol:
     #   _target_: "proteinfoundation.rewards.tmol_reward.TmolRewardModel"
     #   enable_hbond: true

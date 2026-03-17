@@ -237,29 +237,22 @@ If an environment variable is missing, Hydra will fail with an `InterpolationKey
 After configuring checkpoint paths and environment variables, verify everything is accessible:
 
 ```bash
-# 1. Validate the config resolves without errors
+# Validate the config resolves without errors
 complexa validate design configs/search_binder_local_pipeline.yaml
-
-# 2. Run the community model and bioinformatics integration tests
-#    Tests are skipped (not failed) for any tool/model not installed
-.venv/bin/python -m pytest -m slow -v
-
-# 3. Run just the bioinformatics tool tests (no GPU required for SASA/interface scoring)
-.venv/bin/python -m pytest tests/utils/test_pr_alternative_utils.py tests/evaluation/test_integration.py -v -k "BioinformaticsMetrics or ComputeSasaMetrics or PrAlternativeScoreInterface"
 ```
 
 > **Detailed config reference**: See [Configuration Guide](docs/CONFIGURATION_GUIDE.md) for all YAML fields — search algorithms, reward model weights, evaluation settings, analysis thresholds, and training configs.
 
 ## Quick Start
 
-> **GPU requirements**: The default pipeline configs use `gen_njobs: 2` and `eval_njobs: 2`, which run generation and evaluation across 2 GPUs in parallel. If you have a single GPU, override these to 1:
+> **GPU parallelism**: The pipeline configs default to `gen_njobs: 1` and `eval_njobs: 1`, which uses a single GPU. If you have multiple GPUs, increase these to run generation and evaluation in parallel — each job uses one GPU. For example, with 4 GPUs:
 >
 > ```bash
 > complexa design configs/search_binder_local_pipeline.yaml \
->     ++gen_njobs=1 ++eval_njobs=1 ...
+>     ++gen_njobs=4 ++eval_njobs=4 ...
 > ```
 >
-> Or edit the pipeline YAML directly. In general, set `gen_njobs` / `eval_njobs` to the number of GPUs you want to use.
+> Or edit `gen_njobs` / `eval_njobs` directly in the pipeline YAML.
 
 ```bash
 # 1. Setup
@@ -270,7 +263,7 @@ complexa download --all
 # 2. Validate configuration
 complexa validate design configs/search_binder_local_pipeline.yaml
 
-# 3. Design binders for PDL1 (requires >= 2 GPUs with default settings)
+# 3. Design binders for PDL1
 complexa design configs/search_binder_local_pipeline.yaml \
     ++run_name=pdl1_test \
     ++generation.task_name=02_PDL1
@@ -297,6 +290,10 @@ complexa design configs/search_motif_local_pipeline.yaml \
     ++run_name=motif_test \
     ++generation.task_name=1YCR_AA
 ```
+
+> **Known limitation: TMOL reward not supported for ligand binder / AME pipelines**
+>
+> The TMOL force-field reward model currently does not work with protein-ligand complexes. The TMOL reward section is commented out by default in the ligand binder and AME generate configs. If you enable it, TMOL scores will be fail and only the other reward models (e.g. RF3) will contribute to the reward.
 
 ### Preparing AME Input Structures
 
@@ -482,23 +479,9 @@ Proteina-Complexa/
 │   ├── nn/                          # Model architecture configs
 │   ├── generation/                  # Generation parameter configs
 │   └── targets/                     # Target protein/ligand definitions
-├── tests/                           # Test suite
 ├── docs/                            # Documentation
 ├── env/                             # Environment setup (UV, Docker)
 └── slurm_utils/                     # SLURM cluster launch scripts
-```
-
-## Testing
-
-```bash
-# Run all tests (fast + slow)
-.venv/bin/python -m pytest
-
-# Run only fast tests (skip GPU/binary-dependent slow tests, ~5 min)
-.venv/bin/python -m pytest -m "not slow"
-
-# Run all tests with coverage and timing
-.venv/bin/python -m pytest --durations=0 --cov --cov-report=term-missing
 ```
 
 ## Citation
