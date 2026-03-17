@@ -1,0 +1,107 @@
+CRYST1    1.000    1.000    1.000  90.00  90.00  90.00 P 1           1          
+HETATM    1  PA  FAD A 702      -0.730   0.858   1.795  1.00  0.00           P  
+HETATM    2  O1A FAD A 702      -0.437  -0.556   1.607  1.00  0.00           O  
+HETATM    3  O2A FAD A 702      -1.634   1.512   0.800  1.00  0.00           O  
+HETATM    4  O5B FAD A 702      -1.324   0.981   3.193  1.00  0.00           O  
+HETATM    5  C5B FAD A 702      -1.958   2.193   3.647  1.00  0.00           C  
+HETATM    6  C4B FAD A 702      -2.982   1.805   4.675  1.00  0.00           C  
+HETATM    7  O4B FAD A 702      -3.437   2.979   5.377  1.00  0.00           O  
+HETATM    8  C3B FAD A 702      -4.231   1.126   4.121  1.00  0.00           C  
+HETATM    9  O3B FAD A 702      -4.600   0.040   4.957  1.00  0.00           O  
+HETATM   10  C2B FAD A 702      -5.273   2.243   4.144  1.00  0.00           C  
+HETATM   11  O2B FAD A 702      -6.588   1.739   4.316  1.00  0.00           O  
+HETATM   12  C1B FAD A 702      -4.845   3.001   5.389  1.00  0.00           C  
+HETATM   13  N9A FAD A 702      -5.270   4.388   5.423  1.00  0.00           N  
+HETATM   14  C8A FAD A 702      -5.253   5.283   4.391  1.00  0.00           C  
+HETATM   15  N7A FAD A 702      -5.671   6.479   4.715  1.00  0.00           N  
+HETATM   16  C5A FAD A 702      -5.988   6.360   6.057  1.00  0.00           C  
+HETATM   17  C6A FAD A 702      -6.487   7.277   6.995  1.00  0.00           C  
+HETATM   18  N6A FAD A 702      -6.774   8.546   6.708  1.00  0.00           N  
+HETATM   19  N1A FAD A 702      -6.690   6.838   8.253  1.00  0.00           N  
+HETATM   20  C2A FAD A 702      -6.406   5.568   8.543  1.00  0.00           C  
+HETATM   21  N3A FAD A 702      -5.926   4.615   7.746  1.00  0.00           N  
+HETATM   22  C4A FAD A 702      -5.736   5.080   6.509  1.00  0.00           C  
+HETATM   23  N1  FAD A 702       5.663  -3.857  -4.127  1.00  0.00           N  
+HETATM   24  C2  FAD A 702       6.533  -4.896  -4.011  1.00  0.00           C  
+HETATM   25  O2  FAD A 702       7.500  -4.839  -3.267  1.00  0.00           O  
+HETATM   26  N3  FAD A 702       6.340  -6.039  -4.735  1.00  0.00           N  
+HETATM   27  C4  FAD A 702       5.330  -6.270  -5.590  1.00  0.00           C  
+HETATM   28  O4  FAD A 702       5.263  -7.333  -6.191  1.00  0.00           O  
+HETATM   29  C4X FAD A 702       4.411  -5.171  -5.729  1.00  0.00           C  
+HETATM   30  N5  FAD A 702       3.436  -5.311  -6.539  1.00  0.00           N  
+HETATM   31  C5X FAD A 702       2.556  -4.280  -6.675  1.00  0.00           C  
+HETATM   32  C6  FAD A 702       1.499  -4.438  -7.557  1.00  0.00           C  
+HETATM   33  C7  FAD A 702       0.568  -3.430  -7.740  1.00  0.00           C  
+HETATM   34  C7M FAD A 702      -0.564  -3.640  -8.708  1.00  0.00           C  
+HETATM   35  C8  FAD A 702       0.699  -2.229  -7.028  1.00  0.00           C  
+HETATM   36  C8M FAD A 702      -0.293  -1.117  -7.214  1.00  0.00           C  
+HETATM   37  C9  FAD A 702       1.766  -2.062  -6.151  1.00  0.00           C  
+HETATM   38  C9A FAD A 702       2.691  -3.079  -5.963  1.00  0.00           C  
+HETATM   39  N10 FAD A 702       3.794  -2.956  -5.095  1.00  0.00           N  
+HETATM   40  C10 FAD A 702       4.664  -3.995  -4.945  1.00  0.00           C  
+HETATM   41  C1' FAD A 702       3.966  -1.767  -4.240  1.00  0.00           C  
+HETATM   42  C2' FAD A 702       3.414  -2.002  -2.826  1.00  0.00           C  
+HETATM   43  O2' FAD A 702       2.006  -2.227  -2.860  1.00  0.00           O  
+HETATM   44  C3' FAD A 702       3.734  -0.819  -1.909  1.00  0.00           C  
+HETATM   45  O3' FAD A 702       5.145  -0.681  -1.845  1.00  0.00           O  
+HETATM   46  C4' FAD A 702       3.234  -0.969  -0.466  1.00  0.00           C  
+HETATM   47  O4' FAD A 702       1.912  -1.504  -0.428  1.00  0.00           O  
+HETATM   48  C5' FAD A 702       3.263   0.304   0.356  1.00  0.00           C  
+HETATM   49  O5' FAD A 702       2.489   0.103   1.558  1.00  0.00           O  
+HETATM   50  P   FAD A 702       1.996   1.304   2.451  1.00  0.00           P  
+HETATM   51  O1P FAD A 702       1.754   0.741   3.848  1.00  0.00           O  
+HETATM   52  O2P FAD A 702       2.848   2.414   2.444  1.00  0.00           O  
+HETATM   53  O3P FAD A 702       0.611   1.692   1.846  1.00  0.00           O  
+CONECT    1    2    3    4   53
+CONECT    2    1
+CONECT    3    1
+CONECT    4    1    5
+CONECT    5    4    6
+CONECT    6    5    7    8
+CONECT    7    6   12
+CONECT    8    6    9   10
+CONECT    9    8
+CONECT   10    8   11   12
+CONECT   11   10
+CONECT   12    7   10   13
+CONECT   13   12   14   22
+CONECT   14   13   15
+CONECT   15   14   16
+CONECT   16   15   17   22
+CONECT   17   16   18   19
+CONECT   18   17
+CONECT   19   17   20
+CONECT   20   19   21
+CONECT   21   20   22
+CONECT   22   13   16   21
+CONECT   23   24   40
+CONECT   24   23   25   26
+CONECT   25   24
+CONECT   26   24   27
+CONECT   27   26   28   29
+CONECT   28   27
+CONECT   29   27   30   40
+CONECT   30   29   31
+CONECT   31   30   32   38
+CONECT   32   31   33
+CONECT   33   32   34   35
+CONECT   34   33
+CONECT   35   33   36   37
+CONECT   36   35
+CONECT   37   35   38
+CONECT   38   31   37   39
+CONECT   39   38   40   41
+CONECT   40   23   29   39
+CONECT   41   39   42
+CONECT   42   41   43   44
+CONECT   43   42
+CONECT   44   42   45   46
+CONECT   45   44
+CONECT   46   44   47   48
+CONECT   47   46
+CONECT   48   46   49
+CONECT   49   48   50
+CONECT   50   49   51   52   53
+CONECT   51   50
+CONECT   52   50
+CONECT   53    1   50

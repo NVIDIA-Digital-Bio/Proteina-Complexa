@@ -1,0 +1,55 @@
+CRYST1   45.522   92.142   56.669  90.00  90.00  90.00 P 1           1          
+HETATM    1  N   SAM A 303       2.900   4.562   4.030  1.00  0.00           N  
+HETATM    2  CA  SAM A 303       1.719   3.907   3.520  1.00  0.00           C  
+HETATM    3  C   SAM A 303       0.505   3.930   4.434  1.00  0.00           C  
+HETATM    4  O   SAM A 303       0.745   3.847   5.637  1.00  0.00           O  
+HETATM    5  OXT SAM A 303      -0.687   4.015   3.964  1.00  0.00           O  
+HETATM    6  CB  SAM A 303       2.155   2.484   3.198  1.00  0.00           C  
+HETATM    7  CG  SAM A 303       2.920   2.449   1.885  1.00  0.00           C  
+HETATM    8  SD  SAM A 303       2.074   2.994   0.547  1.00  0.00           S  
+HETATM    9  CE  SAM A 303       1.551   4.536   0.518  1.00  0.00           C  
+HETATM   10  C5' SAM A 303       0.728   1.992   0.371  1.00  0.00           C  
+HETATM   11  C4' SAM A 303       1.142   0.695  -0.322  1.00  0.00           C  
+HETATM   12  O4' SAM A 303       0.094  -0.287  -0.265  1.00  0.00           O  
+HETATM   13  C3' SAM A 303       1.456   0.947  -1.799  1.00  0.00           C  
+HETATM   14  O3' SAM A 303       2.818   0.660  -2.090  1.00  0.00           O  
+HETATM   15  C2' SAM A 303       0.508   0.052  -2.579  1.00  0.00           C  
+HETATM   16  O2' SAM A 303       1.045  -0.618  -3.739  1.00  0.00           O  
+HETATM   17  C1' SAM A 303       0.160  -0.973  -1.510  1.00  0.00           C  
+HETATM   18  N9  SAM A 303      -1.111  -1.657  -1.739  1.00  0.00           N  
+HETATM   19  C8  SAM A 303      -2.262  -1.122  -2.214  1.00  0.00           C  
+HETATM   20  N7  SAM A 303      -3.229  -2.081  -2.257  1.00  0.00           N  
+HETATM   21  C5  SAM A 303      -2.671  -3.230  -1.791  1.00  0.00           C  
+HETATM   22  C6  SAM A 303      -3.126  -4.617  -1.603  1.00  0.00           C  
+HETATM   23  N6  SAM A 303      -4.398  -4.903  -1.897  1.00  0.00           N  
+HETATM   24  N1  SAM A 303      -2.262  -5.524  -1.095  1.00  0.00           N  
+HETATM   25  C2  SAM A 303      -0.996  -5.174  -0.781  1.00  0.00           C  
+HETATM   26  N3  SAM A 303      -0.484  -3.938  -0.982  1.00  0.00           N  
+HETATM   27  C4  SAM A 303      -1.282  -2.949  -1.453  1.00  0.00           C  
+CONECT    1    2
+CONECT    2    1    3    6
+CONECT    3    2    4    5
+CONECT    4    3
+CONECT    5    3
+CONECT    6    2    7
+CONECT    7    6    8
+CONECT    8    7    9   10
+CONECT    9    8
+CONECT   10    8   11
+CONECT   11   10   12   13
+CONECT   12   11   17
+CONECT   13   11   14   15
+CONECT   14   13
+CONECT   15   13   16   17
+CONECT   16   15
+CONECT   17   12   15   18
+CONECT   18   17   19   27
+CONECT   19   18   20
+CONECT   20   19   21
+CONECT   21   20   22   27
+CONECT   22   21   23   24
+CONECT   23   22
+CONECT   24   22   25
+CONECT   25   24   26
+CONECT   26   25   27
+CONECT   27   18   21   26

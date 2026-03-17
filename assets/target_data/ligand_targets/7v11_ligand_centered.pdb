@@ -1,0 +1,77 @@
+CRYST1   59.615   59.614   66.857  90.00  90.00  90.00 P 1           1          
+HETATM    1  C21 OQO A 701       1.796   1.591   1.888  1.00  0.00           C  
+HETATM    2  C7  OQO A 701      -3.670  -3.928  -1.832  1.00  0.00           C  
+HETATM    3  C32 OQO A 701       4.744   4.449  -0.074  1.00  0.00           C  
+HETATM    4  C31 OQO A 701       6.015   3.877   0.007  1.00  0.00           C  
+HETATM    5  C20 OQO A 701       0.756   0.690   2.129  1.00  0.00           C  
+HETATM    6  C6  OQO A 701      -4.261  -4.765  -2.769  1.00  0.00           C  
+HETATM    7  C10 OQO A 701      -3.584  -0.488  -0.075  1.00  0.00           C  
+HETATM    8  C13 OQO A 701      -2.147  -2.160  -0.234  1.00  0.00           C  
+HETATM    9  C23 OQO A 701       2.321   0.302  -0.048  1.00  0.00           C  
+HETATM   10  C35 OQO A 701       1.998   5.388   0.829  1.00  0.00           C  
+HETATM   11  C22 OQO A 701       2.596   1.376   0.773  1.00  0.00           C  
+HETATM   12  C8  OQO A 701      -3.992  -2.556  -1.764  1.00  0.00           C  
+HETATM   13  C9  OQO A 701      -3.323  -1.716  -0.756  1.00  0.00           C  
+HETATM   14  C26 OQO A 701       3.754   2.272   0.494  1.00  0.00           C  
+HETATM   15  C33 OQO A 701       3.638   3.639   0.150  1.00  0.00           C  
+HETATM   16  C27 OQO A 701       5.041   1.731   0.564  1.00  0.00           C  
+HETATM   17  C29 OQO A 701       6.165   2.513   0.360  1.00  0.00           C  
+HETATM   18  C2  OQO A 701      -4.928  -2.088  -2.660  1.00  0.00           C  
+HETATM   19  C19 OQO A 701       0.532  -0.382   1.291  1.00  0.00           C  
+HETATM   20  C4  OQO A 701      -5.215  -4.204  -3.626  1.00  0.00           C  
+HETATM   21  C17 OQO A 701      -1.767  -4.259   2.637  1.00  0.00           C  
+HETATM   22  C18 OQO A 701      -2.012  -3.855   4.077  1.00  0.00           C  
+HETATM   23  C16 OQO A 701      -2.079  -2.810   2.972  1.00  0.00           C  
+HETATM   24  C1  OQO A 701      -5.349  -0.634  -2.677  1.00  0.00           C  
+HETATM   25  C15 OQO A 701      -0.976  -1.768   2.899  1.00  0.00           C  
+HETATM   26  C14 OQO A 701      -0.535  -1.455   1.452  1.00  0.00           C  
+HETATM   27  N11 OQO A 701      -2.585  -0.171   0.816  1.00  0.00           N  
+HETATM   28  N36 OQO A 701       0.754   5.663   0.496  1.00  0.00           N  
+HETATM   29  N3  OQO A 701      -5.530  -2.885  -3.584  1.00  0.00           N  
+HETATM   30  N37 OQO A 701       0.393   4.687  -0.396  1.00  0.00           N  
+HETATM   31  N38 OQO A 701       1.387   3.830  -0.620  1.00  0.00           N  
+HETATM   32  N12 OQO A 701      -1.758  -1.237   0.675  1.00  0.00           N  
+HETATM   33  N34 OQO A 701       2.394   4.279   0.159  1.00  0.00           N  
+HETATM   34  N24 OQO A 701       1.297  -0.544   0.210  1.00  0.00           N  
+HETATM   35  N5  OQO A 701      -5.850  -5.028  -4.591  1.00  0.00           N  
+HETATM   36  O25 OQO A 701       1.138  -1.534  -0.591  1.00  0.00           O  
+HETATM   37  F28 OQO A 701       5.155   0.395   0.915  1.00  0.00           F  
+HETATM   38 CL30 OQO A 701       7.700   1.769   0.497  1.00  0.00          CL  
+CONECT    1   11    5
+CONECT    2    6   12
+CONECT    3    4   15
+CONECT    4    3   17
+CONECT    5   19    1
+CONECT    6   20    2
+CONECT    7   13   27
+CONECT    8   13   32
+CONECT    9   34   11
+CONECT   10   33   28
+CONECT   11    9   14    1
+CONECT   12   18    2   13
+CONECT   13   12    8    7
+CONECT   14   15   16   11
+CONECT   15    3   33   14
+CONECT   16   17   14   37
+CONECT   17    4   38   16
+CONECT   18   29   24   12
+CONECT   19   34   26    5
+CONECT   20   35   29    6
+CONECT   21   23   22
+CONECT   22   21   23
+CONECT   23   21   25   22
+CONECT   24   18
+CONECT   25   26   23
+CONECT   26   32   19   25
+CONECT   27    7   32
+CONECT   28   30   10
+CONECT   29   20   18
+CONECT   30   31   28
+CONECT   31   30   33
+CONECT   32    8   27   26
+CONECT   33   31   15   10
+CONECT   34   36    9   19
+CONECT   35   20
+CONECT   36   34
+CONECT   37   16
+CONECT   38   17
