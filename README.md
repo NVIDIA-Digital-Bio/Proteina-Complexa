@@ -213,7 +213,7 @@ DATA_PATH=/path/to/PFM_data                            # Target structures and d
 
 > **`dssp` and `sc` binaries**: These are not distributed with this repository. Pre-compiled binaries compatible with our evaluation pipeline can be obtained from [FreeBindCraft](https://github.com/cytokineking/FreeBindCraft/tree/master/functions) (`dssp` and `sc`). Place them in `env/docker/internal/` for Docker builds, or anywhere on your system and set `DSSP_EXEC` and `SC_EXEC` in `.env` accordingly. The Docker image includes them automatically from `env/docker/internal/`.
 
-> **Full `.env` reference**: The `.env` file also contains Docker settings, SLURM cluster configuration, and runtime-specific tool paths.
+> **Full `.env` reference**: The `.env` file also contains Docker settings, and runtime-specific tool paths.
 
 The reward model configs in `configs/pipeline/binder/binder_generate.yaml` (and the ligand/AME equivalents) reference these variables:
 
@@ -357,7 +357,7 @@ There are four design pipelines, each with its own config and model:
 | AME (Motif + Ligand) | `search_ame_local_pipeline.yaml` | AME model (LoRA) | Scaffold functional motifs with ligand context |
 | Monomer Motif | `search_motif_local_pipeline.yaml` | AME model (LoRA) | Scaffold structural motifs into monomer proteins |
 
-Each pipeline runs four stages: **generate → filter → evaluate → analyze**. Run the full pipeline with `complexa design`, or run stages individually (`complexa generate`, `complexa filter`, etc.). See the [Inference Guide](docs/INFERENCE.md) for individual stages, SLURM deployment, and advanced usage.
+Each pipeline runs four stages: **generate → filter → evaluate → analyze**. Run the full pipeline with `complexa design`, or run stages individually (`complexa generate`, `complexa filter`, etc.). See the [Inference Guide](docs/INFERENCE.md) for individual stages, and advanced usage.
 
 ## Data
 
@@ -420,7 +420,7 @@ The Teddymer dimer IDs used for training are listed in [`assets/data/teddymer_va
 | Document | What it covers |
 |----------|---------------|
 | [Configuration Guide](docs/CONFIGURATION_GUIDE.md) | All YAML config examples: search, rewards, evaluation, analysis, training |
-| [Inference Guide](docs/INFERENCE.md) | Running locally and on SLURM, custom targets, troubleshooting |
+| [Inference Guide](docs/INFERENCE.md) | Running locally, custom targets, troubleshooting |
 | [Search Metadata & Visualization](docs/SEARCH_METADATA.md) | Metadata tag conventions, output size formulas, trajectory query examples |
 | [Evaluation & Analysis Guide](docs/EVALUATION_METRICS.md) | Evaluation pipeline, metrics, result CSVs, success criteria |
 | [Sweep System](docs/SWEEP.md) | Parameter sweeps without modifying source code |
@@ -465,12 +465,12 @@ Proteina-Complexa/
 │   ├── search_binder_local_pipeline.yaml         # Protein binder pipeline (local)
 │   ├── search_ligand_binder_local_pipeline.yaml  # Ligand binder pipeline (local)
 │   ├── search_ame_local_pipeline.yaml            # AME motif scaffolding pipeline (local)
-│   ├── search_binder_pipeline.yaml               # Protein binder pipeline (SLURM)
+│   ├── search_binder_pipeline.yaml               # Protein binder pipeline 
 │   ├── evaluate*.yaml               # Standalone evaluation configs
 │   ├── analyze*.yaml                # Standalone analysis configs
 │   ├── training*.yaml               # Training configs
 │   ├── pipeline/                    # Modular stage configs
-│   │   ├── binder/                  #   Protein binder (generate, evaluate, analyze + SLURM variants)
+│   │   ├── binder/                  #   Protein binder (generate, evaluate, analyze
 │   │   ├── ligand_binder/           #   Ligand binder (generate, evaluate, analyze)
 │   │   ├── ame/                     #   AME motif scaffolding (generate, evaluate, analyze)
 │   │   ├── model_sampling.yaml      #   Shared diffusion sampling params
@@ -481,7 +481,6 @@ Proteina-Complexa/
 │   └── targets/                     # Target protein/ligand definitions
 ├── docs/                            # Documentation
 ├── env/                             # Environment setup (UV, Docker)
-└── slurm_utils/                     # SLURM cluster launch scripts
 ```
 
 ## Citation
