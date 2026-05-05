@@ -74,7 +74,7 @@ Proteina-Complexa is a generative model for protein complex design using flow ma
 
 ### Wet-Lab Validation
 
-Proteina-Complexa designs have been experimentally validated across diverse protein targets and interaction types, demonstrating that in-silico success translates to real binding activity. For full experimental results, protocols, and characterization data, see the [paper](https://research.nvidia.com/labs/genair/proteina-complexa/assets/proteina_complexa_validation/proteina_complexa_validation.pdf) and [project website](https://research.nvidia.com/labs/genair/proteina-complexa/).
+Proteina-Complexa designs have been experimentally validated across diverse protein targets and interaction types, demonstrating that in-silico success translates to real binding activity. For full experimental results, protocols, and characterization data, see the [paper](https://research.nvidia.com/labs/genair/proteina-complexa/assets/proteina_complexa_validation.pdf) and [project website](https://research.nvidia.com/labs/genair/proteina-complexa/).
 
 ## Installation
 
