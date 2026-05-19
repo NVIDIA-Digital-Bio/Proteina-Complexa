@@ -1,6 +1,7 @@
 import torch
 from openfold.model.structure_module import BackboneUpdate, InvariantPointAttention
 from openfold.model.structure_module import StructureModuleTransition as StructureTransition
+from openfold.utils.rigid_utils import Rigid
 from torch import nn
 
 
@@ -127,6 +128,7 @@ class StructureNet(nn.Module):
         ipa_dropout,
         n_structure_transition_layer,
         structure_transition_dropout,
+        center_translations: bool = True,
     ):
         """
         Args:
@@ -155,6 +157,7 @@ class StructureNet(nn.Module):
         """
         super().__init__()
         self.n_structure_block = n_structure_block
+        self.center_translations = center_translations
 
         # Create structure layers
         layers = [
@@ -228,6 +231,19 @@ class StructureNet(nn.Module):
         states = [s.unsqueeze(0)]
         mask = residue_mask.int()
         for block_idx in range(self.n_structure_block):
-            s, p, ts, mask, states = self.net((s, p, ts, mask, states))
+            if self.center_translations:
+                # Subtract per-sample center of mass from frame translations before
+                # each IPA block.  Re-centering improves numerical stability and
+                # makes IPA effectively translation-equivariant: rotating/translating
+                # the complex leaves the relative geometry unchanged.
+                trans = ts.get_trans()  # [B, N, 3]
+                mask_f = mask.float()[..., None]  # [B, N, 1]
+                com = (trans * mask_f).sum(dim=1, keepdim=True) / (mask_f.sum(dim=1, keepdim=True) + 1e-8)
+                ts_centered = Rigid(ts.get_rots(), trans - com)
+                s, p, ts_centered, mask, states = self.net((s, p, ts_centered, mask, states))
+                # Restore original translations so downstream code is unaffected
+                ts = Rigid(ts_centered.get_rots(), ts_centered.get_trans() + com)
+            else:
+                s, p, ts, mask, states = self.net((s, p, ts, mask, states))
         states = torch.concat(states, dim=0)
         return states, ts, s

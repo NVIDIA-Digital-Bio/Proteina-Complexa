@@ -188,6 +188,21 @@ class BaseRewardModel(ABC):
         """
         return aux
 
+    def enable_cache(self, max_size: int = 5000) -> None:
+        """Attach a RewardCache to avoid re-scoring identical sequences.
+
+        Common in beam search where sibling branches share parent sequences.
+        Safe to call on CompositeRewardModel — cache is attached at the top level
+        and checked by ``compute_reward_from_samples``.
+
+        Args:
+            max_size: Maximum number of sequence → reward entries to keep (LRU eviction).
+        """
+        from proteinfoundation.rewards.reward_utils import RewardCache
+
+        self._reward_cache = RewardCache(max_size)
+        logger.info(f"RewardCache enabled on {type(self).__name__} (max_size={max_size})")
+
     def cleanup(self) -> None:
         """Explicit cleanup of model memory.
 

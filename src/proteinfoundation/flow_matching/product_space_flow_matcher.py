@@ -2,10 +2,43 @@ from collections.abc import Callable
 
 import lightning as L
 import torch
+import torch.nn as nn
 from jaxtyping import Bool, Float
 from torch import Tensor
 
 from proteinfoundation.flow_matching.rdn_flow_matcher import RDNFlowMatcher
+
+
+class LearnableSchedule(nn.Module):
+    """Per-modality learnable time schedule for flow matching.
+
+    Parameterises the nsteps+1 time points as a softmax over step-width
+    logits followed by a cumulative sum.  This guarantees a strictly
+    monotonic schedule in [0, 1] while allowing the model to concentrate
+    evaluation steps in whichever time region has the highest loss gradient
+    (typically t ∈ [0.2, 0.7] for backbone coordinates).
+
+    Usage — add to config::
+
+        product_flowmatcher:
+          bb_ca:
+            learnable_schedule_nsteps: 400   # matches nsteps at inference
+
+    Args:
+        nsteps: Number of integration steps.  The schedule has nsteps+1 points.
+    """
+
+    def __init__(self, nsteps: int) -> None:
+        super().__init__()
+        self.nsteps = nsteps
+        # Initialise as uniform (all logits equal → uniform softmax → linear schedule)
+        self.logits = nn.Parameter(torch.zeros(nsteps))
+
+    def get_ts(self) -> Tensor:
+        """Return the current schedule as a [nsteps+1] tensor in [0, 1]."""
+        deltas = torch.softmax(self.logits, dim=0)
+        ts = torch.cat([self.logits.new_zeros(1), torch.cumsum(deltas, dim=0)])
+        return ts  # [nsteps + 1], ts[0]=0, ts[-1]=1
 
 FLOW_MATCHER_FACTORY = {
     "bb_ca": RDNFlowMatcher,
@@ -24,6 +57,15 @@ class ProductSpaceFlowMatcher(L.LightningModule):
         self.cfg_exp = cfg_exp
         self.data_modes = [m for m in self.cfg_exp.product_flowmatcher]
         self.base_flow_matchers = self.get_base_flow_matchers()
+
+        # Optional learnable schedules, one per data mode that opts in via
+        # ``learnable_schedule_nsteps`` in its product_flowmatcher config entry.
+        learnable: dict[str, LearnableSchedule] = {}
+        for m in self.data_modes:
+            nsteps = self.cfg_exp.product_flowmatcher[m].get("learnable_schedule_nsteps", None)
+            if nsteps is not None:
+                learnable[m] = LearnableSchedule(int(nsteps))
+        self.learnable_schedules = nn.ModuleDict(learnable)
 
     def get_base_flow_matchers(self):
         """Constructs all necessary flow matchers."""
@@ -758,15 +800,32 @@ class ProductSpaceFlowMatcher(L.LightningModule):
         # }  # each [nsteps + 1], first element is 0, last is 1
         ts = {}
         for data_mode in self.data_modes:
-            if sampling_model_args[data_mode]["simulation_step_params"]["sampling_mode"] == "vf_tsr":
-                schedule_func = get_schedule_tsr_safe
+            if data_mode in self.learnable_schedules:
+                # Learnable schedule takes priority; interpolate to requested nsteps
+                # if the learned nsteps differs from the inference nsteps.
+                ls = self.learnable_schedules[data_mode]
+                if ls.nsteps == int(nsteps):
+                    ts[data_mode] = ls.get_ts().detach()
+                else:
+                    # Resample to requested resolution via linear interpolation
+                    raw = ls.get_ts().detach()
+                    src_idx = torch.linspace(0, 1, len(raw), device=raw.device)
+                    tgt_idx = torch.linspace(0, 1, int(nsteps) + 1, device=raw.device)
+                    ts[data_mode] = torch.from_numpy(
+                        __import__("numpy").interp(tgt_idx.cpu().numpy(), src_idx.cpu().numpy(), raw.cpu().numpy())
+                    ).to(raw.dtype)
+            elif sampling_model_args[data_mode]["simulation_step_params"]["sampling_mode"] == "vf_tsr":
+                ts[data_mode] = get_schedule_tsr_safe(
+                    mode=sampling_model_args[data_mode]["schedule"]["mode"],
+                    nsteps=int(nsteps),
+                    p1=sampling_model_args[data_mode]["schedule"]["p"],
+                )
             else:
-                schedule_func = get_schedule
-            ts[data_mode] = schedule_func(
-                mode=sampling_model_args[data_mode]["schedule"]["mode"],
-                nsteps=int(nsteps),
-                p1=sampling_model_args[data_mode]["schedule"]["p"],
-            )
+                ts[data_mode] = get_schedule(
+                    mode=sampling_model_args[data_mode]["schedule"]["mode"],
+                    nsteps=int(nsteps),
+                    p1=sampling_model_args[data_mode]["schedule"]["p"],
+                )
 
         gt = {
             data_mode: get_gt(

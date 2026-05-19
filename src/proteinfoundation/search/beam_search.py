@@ -124,6 +124,10 @@ class BeamSearch(BaseSearch):
                 f"denoised and rewards are computed on incomplete structures."
             )
         n_steps_total = len(step_checkpoints) - 1
+        # When adaptive_branching=true, taper n_branch from n_branch → ceil(n_branch/2)
+        # over the course of the search. Early steps (high t, high entropy) benefit from
+        # more branches; late steps converge quickly and waste compute branching heavily.
+        adaptive_branching = beam_cfg.get("adaptive_branching", False)
 
         # ── initialise noise + tags ─────────────────────────────────────
         init_mask = batch["mask"]
@@ -152,6 +156,16 @@ class BeamSearch(BaseSearch):
             start_step = step_checkpoints[i]
             end_step = step_checkpoints[i + 1]
             logger.info(f"\n[BeamSearch] Step {i + 1}/{n_steps_total}: denoising {start_step} -> {end_step}")
+
+            # Adaptive branching: taper from n_branch → max(1, n_branch//2) linearly.
+            # Late steps are near-deterministic; fewer branches waste little quality.
+            if adaptive_branching and n_steps_total > 1:
+                progress = i / (n_steps_total - 1)  # 0 → 1
+                n_branch_step = max(1, round(n_branch * (1.0 - 0.5 * progress)))
+            else:
+                n_branch_step = n_branch
+            if n_branch_step != n_branch:
+                logger.debug(f"[BeamSearch] Adaptive branching: n_branch_step={n_branch_step} (base={n_branch})")
 
             # ── branch: batch all replicas × branches in one call ────────
             # Previously this was a nested ``for replica × for branch`` loop
@@ -198,15 +212,15 @@ class BeamSearch(BaseSearch):
             #     indices 18..20 → replica 1, branch 2, samples 0-2
             #     indices 21..23 → replica 1, branch 3, samples 0-2
             #
-            branching_factor = beam_width * n_branch
+            branching_factor = beam_width * n_branch_step
             branch_parts = []
             pred_parts = []
             for replica_idx in range(beam_width):
                 rep_xt = {k: v[replica_idx::beam_width] for k, v in xt.items()}
-                branch_parts.append(tile_tensor_dict(rep_xt, n_branch))
+                branch_parts.append(tile_tensor_dict(rep_xt, n_branch_step))
                 if x_1_pred is not None:
                     rep_pred = {k: v[replica_idx::beam_width] for k, v in x_1_pred.items()}
-                    pred_parts.append(tile_tensor_dict(rep_pred, n_branch))
+                    pred_parts.append(tile_tensor_dict(rep_pred, n_branch_step))
 
             big_xt = concat_dict_tensors(branch_parts, dim=0)
             big_pred = concat_dict_tensors(pred_parts, dim=0) if x_1_pred is not None else None
@@ -242,7 +256,7 @@ class BeamSearch(BaseSearch):
             expanded_tags = expand_tags_for_branches(
                 metadata_tags,
                 beam_width,
-                n_branch,
+                n_branch_step,
                 start_step=start_step,
                 end_step=end_step,
             )
@@ -306,23 +320,23 @@ class BeamSearch(BaseSearch):
             )
             # FIX: flat layout from branching is replica-major:
             #   [r0_b0_s0..sN, r0_b1_s0..sN, …, rW_bB_s0..sN]
-            # so dim-0 of the view must be beam_width (replica), not n_branch.
-            rewards_reshaped = total_rewards.view(beam_width, n_branch, nsamples)
-            # permute → [nsamples, beam_width, n_branch] → reshape flattens
+            # so dim-0 of the view must be beam_width (replica), not n_branch_step.
+            rewards_reshaped = total_rewards.view(beam_width, n_branch_step, nsamples)
+            # permute → [nsamples, beam_width, n_branch_step] → reshape flattens
             # the last two dims so each row's columns are replica-major:
-            #   col_idx = replica * n_branch + branch
-            rewards_for_selection = rewards_reshaped.permute(2, 0, 1).reshape(nsamples, beam_width * n_branch)
+            #   col_idx = replica * n_branch_step + branch
+            rewards_for_selection = rewards_reshaped.permute(2, 0, 1).reshape(nsamples, beam_width * n_branch_step)
 
             top_k_indices = torch.topk(rewards_for_selection, k=beam_width, dim=1)[1]
             # top_k_indices are column indices into the replica-major row,
-            # so we recover replica and branch via divmod on n_branch.
-            replica_indices = top_k_indices // n_branch
-            branch_indices = top_k_indices % n_branch
+            # so we recover replica and branch via divmod on n_branch_step.
+            replica_indices = top_k_indices // n_branch_step
+            branch_indices = top_k_indices % n_branch_step
 
             # Map back to flat indices into big_xt / total_rewards using the
-            # replica-major formula: replica * n_branch * N + branch * N + sample.
+            # replica-major formula: replica * n_branch_step * N + branch * N + sample.
             sample_indices = torch.arange(nsamples, device=search_ctx.device).unsqueeze(1).expand(-1, beam_width)
-            global_indices = replica_indices * n_branch * nsamples + branch_indices * nsamples + sample_indices
+            global_indices = replica_indices * n_branch_step * nsamples + branch_indices * nsamples + sample_indices
             # Flatten row-major → output is GROUPED by sample (all beam_width
             # winners for sample 0 first, then sample 1, …) which matches the
             # grouped layout that xt started with from repeat_interleave.

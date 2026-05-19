@@ -808,6 +808,100 @@ class AutoEncoder(L.LightningModule):
         self.validation_output_data = []
         # Should log here?
 
+    @torch.no_grad()
+    def analyze_reconstruction_fidelity(
+        self,
+        dataloader,
+        max_samples: int = 1000,
+    ) -> dict:
+        """Measure reconstruction quality and latent utilisation.
+
+        Runs encode→decode on held-out samples and reports:
+        - ``mean_ca_rmsd_ang``: mean CA RMSD (Å, no alignment) — proxy for
+          information loss through the bottleneck.
+        - ``mean_active_dims``: average number of latent dimensions with per-
+          component KL > 0.1 (active units). If this equals ``latent_z_dim``
+          the bottleneck may be undersized.
+        - ``recommendation``: human-readable suggestion for ``latent_z_dim``.
+
+        Args:
+            dataloader: Validation dataloader yielding the same batch format
+                as the training loop.
+            max_samples: Stop after this many samples (for speed).
+
+        Returns:
+            Dict with keys ``mean_ca_rmsd_ang``, ``mean_active_dims``,
+            ``latent_dim``, and ``recommendation``.
+        """
+        from proteinfoundation.utils.coors_utils import nm_to_ang
+
+        rmsd_vals: list[float] = []
+        active_units_vals: list[float] = []
+        n_seen = 0
+
+        self.eval()
+        for batch in dataloader:
+            if n_seen >= max_samples:
+                break
+
+            mask = batch["mask_dict"]["coords"][..., 0, 0].to(self.device)
+            batch["mask"] = mask
+            ca_coors_nm = batch["coords_nm"][..., 1, :].to(self.device) * mask[..., None]
+
+            # Move all tensors to device
+            batch = {
+                k: v.to(self.device) if isinstance(v, torch.Tensor) else v for k, v in batch.items()
+            }
+
+            output_enc = self.encoder(batch)
+            z = output_enc["z_latent"]
+            mean = output_enc["mean"]
+            log_scale = output_enc["log_scale"]
+
+            input_dec = {
+                "z_latent": z,
+                "ca_coors_nm": ca_coors_nm,
+                "residue_mask": mask,
+                "mask": mask,
+            }
+            output_dec = self.decoder(input_dec)
+            coors_pred = output_dec["coors_nm"]  # [b, n, 37, 3] nm
+
+            # CA RMSD in Å (atom index 1 = CA)
+            ca_true_ang = nm_to_ang(batch["coords_nm"][..., 1, :])  # [b, n, 3]
+            ca_pred_ang = nm_to_ang(coors_pred[..., 1, :])  # [b, n, 3]
+            diff_sq = ((ca_true_ang - ca_pred_ang) ** 2).sum(dim=-1)  # [b, n]
+            diff_sq = diff_sq * mask
+            nres = mask.float().sum(dim=-1).clamp(min=1.0)
+            rmsd = torch.sqrt(diff_sq.sum(dim=-1) / nres)  # [b]
+            rmsd_vals.extend(rmsd.cpu().tolist())
+
+            # Active latent dimensions: per-component KL > 0.1 threshold
+            kl_per_dim = self._per_component_kl(mean, log_scale, mask)  # [b, n, d]
+            kl_mean_per_dim = (kl_per_dim * mask[..., None]).sum(dim=(0, 1)) / mask.float().sum().clamp(min=1)
+            active = (kl_mean_per_dim > 0.1).float().sum().item()
+            active_units_vals.append(active)
+
+            n_seen += mask.shape[0]
+
+        mean_rmsd = float(torch.tensor(rmsd_vals).mean().item())
+        mean_active = float(torch.tensor(active_units_vals).mean().item())
+        d = self.latent_dim
+
+        if mean_rmsd > 1.5:
+            rec = f"Bottleneck too tight — increase latent_z_dim from {d} to {int(d * 1.5)}"
+        elif mean_active < d * 0.5:
+            rec = f"Only {mean_active:.0f}/{d} dims active — could reduce latent_z_dim to ~{int(mean_active * 1.2)}"
+        else:
+            rec = f"Bottleneck looks healthy ({mean_active:.0f}/{d} dims active, RMSD={mean_rmsd:.2f}Å)"
+
+        return {
+            "mean_ca_rmsd_ang": mean_rmsd,
+            "mean_active_dims": mean_active,
+            "latent_dim": d,
+            "recommendation": rec,
+        }
+
     def predict_step(self, batch: dict, batch_idx: int) -> dict:
         """
         Makes predictions. Given a data batch, encodes, and returns decoded batch.
