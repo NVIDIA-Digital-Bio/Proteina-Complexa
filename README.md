@@ -76,6 +76,20 @@ Proteina-Complexa is a generative model for protein complex design using flow ma
 
 Proteina-Complexa designs have been experimentally validated across diverse protein targets and interaction types, demonstrating that in-silico success translates to real binding activity. For full experimental results, protocols, and characterization data, see the [paper](https://research.nvidia.com/labs/genair/proteina-complexa/assets/proteina_complexa_validation/proteina_complexa_validation.pdf) and [project website](https://research.nvidia.com/labs/genair/proteina-complexa/).
 
+## What's New in 1.1.0
+
+**AF2 evaluation cache (~5x end-to-end evaluation speedup).**
+
+`run_af_eval` in [`src/proteinfoundation/utils/colabdesign_utils.py`](src/proteinfoundation/utils/colabdesign_utils.py) used to rebuild the AF2-Multimer model (~3.7 GB of weights + a JAX recompile, ~10-20 s) on every sample and call `clear_mem()` after, guaranteeing the rebuild repeated on the next call. It now constructs the model **once per process** and caches it, keyed on architecture-affecting settings only. Per-sample inputs (PDB, sequence, chain ids, binder length) reuse the cached model.
+
+What this means for users:
+- No API or config changes. `run_af_eval` signature is unchanged; all existing pipeline commands (`complexa evaluate`, `complexa design`) benefit automatically.
+- First sample of an evaluation job still pays the ~20 s build + compile cost; subsequent samples drop to ~1-5 s (JAX may recompile once per unique sequence-length combination).
+- A new public helper [`clear_af2_binder_model_cache()`](src/proteinfoundation/utils/colabdesign_utils.py) is available for tests or when switching AF2 configurations mid-process. The reward path (`AF2RewardModel`, `AbsciBindRewardModel`) was already correct and is unchanged.
+- On exception, only the failing cache entry is evicted; entries for other configurations survive.
+
+Measured impact: on a 100-GPU, 200x10 best-of-N search job we observed a ~5x reduction in end-to-end evaluation time.
+
 ## Installation
 
 ### Option 1: UV Environment (Recommended)
