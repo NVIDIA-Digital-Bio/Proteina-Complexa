@@ -171,7 +171,7 @@ echo "      -> Graphein..."
 uv pip install graphein==1.7.7 --no-deps
 
 echo "      -> Atomworks..."
-uv pip install "atomworks[ml,openbabel,dev]" || echo "Warning: atomworks install failed"
+uv pip install "atomworks[ml,dev]" || echo "Warning: atomworks install failed"
 
 # ------------------------------------------------------------------------------
 # 7. Install optional/full dependencies

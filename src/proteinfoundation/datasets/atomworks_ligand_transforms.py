@@ -7,7 +7,6 @@ import torch
 import torch.nn.functional as F
 from atomworks.constants import CCD_MIRROR_PATH, ELEMENT_NAME_TO_ATOMIC_NUMBER, UNKNOWN_LIGAND
 
-# pip install openbabel-wheel==3.1.1.22
 from atomworks.io.tools.rdkit import atom_array_from_rdkit
 from atomworks.io.utils.ccd import get_available_ccd_codes
 from atomworks.io.utils.selection import get_residue_starts
@@ -15,7 +14,10 @@ from atomworks.ml.encoding_definitions import AF3SequenceEncoding
 from atomworks.ml.transforms._checks import check_atom_array_annotation, check_contains_keys, check_is_instance
 from atomworks.ml.transforms.atom_array import get_within_entity_idx
 from atomworks.ml.transforms.base import Transform
-from atomworks.ml.transforms.openbabel_utils import atom_array_from_openbabel, atom_array_to_openbabel
+# NOTE: OpenBabel support is intentionally not imported by default to avoid the
+# `openbabel-wheel` dependency. To re-enable, install `openbabel-wheel==3.1.1.22`
+# and import `atom_array_from_openbabel` / `atom_array_to_openbabel` from
+# `atomworks.ml.transforms.openbabel_utils` where they are used below.
 from atomworks.ml.utils.token import get_token_starts
 from biotite.structure import AtomArray
 from rdkit import Chem
@@ -287,22 +289,14 @@ class ProteinaLigandTransform(Transform):
         use_rdkit_from_smiles = self.use_rdkit_from_smiles
         use_raw_file = self.use_raw_file  #! this is False for everything but PLINDER
         if use_openbabel:
-            obmol = atom_array_to_openbabel(
-                ligand_atom_array,
-                infer_hydrogens=False,
-                infer_aromaticity=False,
-                annotations_to_keep=[
-                    "chain_id",
-                    "res_id",
-                    "res_name",
-                    "atom_name",
-                    "atom_id",
-                ],
+            raise NotImplementedError(
+                "OpenBabel support has been removed from the default install to drop the "
+                "`openbabel-wheel` dependency. To re-enable, install "
+                "`openbabel-wheel==3.1.1.22`, import `atom_array_from_openbabel` and "
+                "`atom_array_to_openbabel` from `atomworks.ml.transforms.openbabel_utils`, "
+                "and restore the OpenBabel branch in "
+                "`ProteinaLigandTransform.forward`."
             )
-            obmol.ConnectTheDots()
-            obmol.PerceiveBondOrders()
-            new_lig = atom_array_from_openbabel(obmol)
-            #! has many issues with infering bonds
         elif use_rdkit_from_smiles:
             smi = data["extra_info"]["SMILES"]
             mol = Chem.MolFromSmiles(smi)
