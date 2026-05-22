@@ -439,6 +439,7 @@ The Teddymer dimer IDs used for training are listed in [`assets/data/teddymer_va
 | [Evaluation & Analysis Guide](docs/EVALUATION_METRICS.md) | Evaluation pipeline, metrics, result CSVs, success criteria |
 | [Sweep System](docs/SWEEP.md) | Parameter sweeps without modifying source code |
 | [Training Guide](docs/TRAINING.md) | Model training instructions |
+| [Agent Skills](docs/AGENT_SKILLS.md) | Claude Code agent skills (`.claude/skills/`) that drive the `complexa` CLI agentically |
 
 ## Evaluation Types
 
