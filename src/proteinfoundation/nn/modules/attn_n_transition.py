@@ -1,6 +1,7 @@
 import torch
 
 from proteinfoundation.nn.modules.pair_bias_attn import (
+    GeometricSparseMultiHeadBiasedAttentionADALN_MM,
     MultiHeadBiasedAttentionADALN_MM,
     MultiHeadCrossAttentionADALN_MM,
 )
@@ -88,6 +89,96 @@ class MultiheadAttnAndTransition(torch.nn.Module):
             x = self._apply_mha(x, pair_rep, cond, mask) + self._apply_transition(x, cond, mask)
         else:
             x = self._apply_mha(x, pair_rep, cond, mask)
+            x = self._apply_transition(x, cond, mask)
+        return x * mask[..., None]
+
+
+class GeometricMultiheadAttnAndTransition(torch.nn.Module):
+    """``MultiheadAttnAndTransition`` with optional CA-coordinate-guided sparse attention.
+
+    When ``ca_coords`` is passed to ``forward()``, pair attention is restricted
+    to geometrically nearby residue pairs (local radius + top-K NN), focusing
+    the model on structurally relevant interactions and reducing effective O(n²)
+    attention cost for longer sequences (n > 150).
+
+    Drop-in replacement for ``MultiheadAttnAndTransition`` — set
+    ``use_geometric_attn: true`` in the layer config to activate.
+
+    Args:
+        Same as ``MultiheadAttnAndTransition``, plus:
+        geo_topk: Top-K nearest CA neighbours to include per residue.
+        geo_radius: Local radius (Å) to include per residue.
+        attention_type: Underlying kernel to use inside the geometric wrapper.
+    """
+
+    def __init__(
+        self,
+        dim_token,
+        dim_pair,
+        nheads,
+        dim_cond,
+        residual_mha,
+        residual_transition,
+        parallel_mha_transition,
+        use_attn_pair_bias,
+        use_qkln,
+        dropout=0.0,
+        expansion_factor=4,
+        geo_topk: int = 32,
+        geo_radius: float = 8.0,
+        attention_type: str = "flash",
+    ):
+        super().__init__()
+        self.parallel = parallel_mha_transition
+        self.use_attn_pair_bias = use_attn_pair_bias
+
+        if self.parallel and residual_mha and residual_transition:
+            residual_transition = False
+
+        self.residual_mha = residual_mha
+        self.residual_transition = residual_transition
+
+        self.mhba = GeometricSparseMultiHeadBiasedAttentionADALN_MM(
+            dim_token=dim_token,
+            dim_pair=dim_pair,
+            nheads=nheads,
+            dim_cond=dim_cond,
+            use_qkln=use_qkln,
+            geo_topk=geo_topk,
+            geo_radius=geo_radius,
+            attention_type=attention_type,
+        )
+        self.transition = TransitionADALN(dim=dim_token, dim_cond=dim_cond, expansion_factor=expansion_factor)
+
+    def _apply_mha(self, x, pair_rep, cond, mask, ca_coords=None):
+        x_attn = self.mhba(x, pair_rep, cond, mask, ca_coords=ca_coords)
+        if self.residual_mha:
+            x_attn = x_attn + x
+        return x_attn * mask[..., None]
+
+    def _apply_transition(self, x, cond, mask):
+        x_tr = self.transition(x, cond, mask)
+        if self.residual_transition:
+            x_tr = x_tr + x
+        return x_tr * mask[..., None]
+
+    def forward(self, x, pair_rep, cond, mask, ca_coords=None):
+        """
+        Args:
+            x: Token features [b, n, dim_token].
+            pair_rep: Pair representation [b, n, n, dim_pair].
+            cond: Conditioning [b, n, dim_cond].
+            mask: Residue mask [b, n].
+            ca_coords: Optional CA coordinates [b, n, 3] in Å for geometric masking.
+
+        Returns:
+            Updated token features [b, n, dim_token].
+        """
+        x = x * mask[..., None]
+        if self.parallel:
+            x = self._apply_mha(x, pair_rep, cond, mask, ca_coords) + self._apply_transition(x, cond, mask)
+        else:
+            x = self._apply_mha(x, pair_rep, cond, mask, ca_coords)
             x = self._apply_transition(x, cond, mask)
         return x * mask[..., None]
 

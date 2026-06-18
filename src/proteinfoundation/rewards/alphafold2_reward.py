@@ -81,6 +81,7 @@ class AF2RewardModel(BaseRewardModel):
         use_initial_atom_pos: bool = False,
         seed: int = 0,
         device_id: int | None = None,
+        calibration_file: str | None = None,
     ) -> None:
         """Initialize the AF2RewardModel.
 
@@ -125,6 +126,13 @@ class AF2RewardModel(BaseRewardModel):
         self.device = jax.devices("gpu")[device_id]
         self.seed = seed
         self.rng = random.Random(seed)
+
+        # Platt-scaling calibration: pLDDT_calibrated = sigmoid(scale * pLDDT + bias)
+        # Default: identity (scale=1, bias=0 → sigmoid ≈ pLDDT for pLDDT near 0.5)
+        self.plddt_scale: float = 1.0
+        self.plddt_bias: float = 0.0
+        if calibration_file is not None:
+            self._load_calibration(calibration_file)
 
         # Initialize the AF2 model
         self.model = mk_afdesign_model(
@@ -356,14 +364,72 @@ class AF2RewardModel(BaseRewardModel):
                 else:
                     grad_dict["structure"] = torch.from_numpy(jax_grad_struct)
 
+        raw_plddt = torch.from_numpy(aux["plddt"])
         return standardize_reward(
             reward=reward_components,
             grad=grad_dict,
             total_reward=total_reward,
-            plddt=torch.from_numpy(aux["plddt"]),
+            plddt=raw_plddt,
+            plddt_calibrated=self._calibrated_plddt(raw_plddt.mean()),
             pae=torch.from_numpy(aux["pae"]),
             ptm=torch.tensor(aux["ptm"], dtype=torch.float32),
         )
+
+    # ------------------------------------------------------------------
+    # Platt-scaling calibration
+    # ------------------------------------------------------------------
+
+    def calibrate(self, plddt_vals: list[float], success_labels: list[bool]) -> None:
+        """Fit Platt scaling from empirical pLDDT → wet-lab success labels.
+
+        After calibration, ``score()`` returns a ``plddt_calibrated`` entry in the
+        reward dict that is better correlated with actual design success than the
+        raw AF2 pLDDT.
+
+        Args:
+            plddt_vals: Mean pLDDT per design from AF2 (e.g. list of floats in [0, 1]).
+            success_labels: Boolean success flag per design from wet-lab validation.
+        """
+        try:
+            from sklearn.linear_model import LogisticRegression
+        except ImportError as exc:
+            raise ImportError("scikit-learn is required for calibration: pip install scikit-learn") from exc
+
+        import numpy as np
+
+        X = np.array(plddt_vals, dtype=np.float64).reshape(-1, 1)
+        y = np.array(success_labels, dtype=int)
+        lr = LogisticRegression(max_iter=1000, solver="lbfgs")
+        lr.fit(X, y)
+        self.plddt_scale = float(lr.coef_[0][0])
+        self.plddt_bias = float(lr.intercept_[0])
+        logger.info(
+            "AF2 pLDDT calibrated: scale=%.4f, bias=%.4f "
+            "(applied as sigmoid(scale*pLDDT + bias))",
+            self.plddt_scale,
+            self.plddt_bias,
+        )
+
+    def save_calibration(self, path: str) -> None:
+        import json
+
+        with open(path, "w") as f:
+            json.dump({"plddt_scale": self.plddt_scale, "plddt_bias": self.plddt_bias}, f)
+
+    def _load_calibration(self, path: str) -> None:
+        import json
+
+        with open(path) as f:
+            d = json.load(f)
+        self.plddt_scale = float(d["plddt_scale"])
+        self.plddt_bias = float(d["plddt_bias"])
+        logger.info("Loaded pLDDT calibration from %s: scale=%.4f, bias=%.4f", path, self.plddt_scale, self.plddt_bias)
+
+    def _calibrated_plddt(self, plddt: torch.Tensor) -> torch.Tensor:
+        """Apply Platt scaling; returns uncalibrated tensor if params are identity."""
+        if self.plddt_scale == 1.0 and self.plddt_bias == 0.0:
+            return plddt
+        return torch.sigmoid(self.plddt_scale * plddt + self.plddt_bias)
 
     def _clear_model_state(self) -> None:
         """Clear internal model state dictionaries."""

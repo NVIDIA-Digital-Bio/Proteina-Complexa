@@ -17,7 +17,8 @@ from proteinfoundation.rewards.base_reward import (
     ensure_tensor,
     standardize_reward,
 )
-from proteinfoundation.rewards.reward_utils import compute_reward_from_samples, initialize_reward_model
+from proteinfoundation.rewards.energy_reward import GeometricEnergyReward
+from proteinfoundation.rewards.reward_utils import RewardCache, compute_reward_from_samples, initialize_reward_model
 
 __all__ = [
     "GRAD_KEY",
@@ -25,6 +26,8 @@ __all__ = [
     "TOTAL_REWARD_KEY",
     "BaseRewardModel",
     "CompositeRewardModel",
+    "GeometricEnergyReward",
+    "RewardCache",
     "compute_reward_from_samples",
     "ensure_tensor",
     "initialize_reward_model",
