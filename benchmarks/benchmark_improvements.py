@@ -252,8 +252,8 @@ def bench_reward_cache() -> None:
           f"{N_UNIQUE} unique in pool")
     print(f"  WITHOUT cache : {t_no:7.0f} ms   ({no_cache.n_calls} model calls)")
     print(f"  WITH cache    : {t_yes:7.0f} ms   ({with_cache.n_calls} model calls)")
-    print(f"  Hit rate  : {hr:.1%}")
-    print(f"  Speedup   : {speedup:.1f}x")
+    print(f"  Hit rate  : {hr:.1%}  (higher when sequences share lineage; lower as beam diversifies)")
+    print(f"  Speedup   : {speedup:.1f}x  (proportional to hit rate x latency per call)")
 
     RESULTS["reward_cache"] = dict(
         without_ms=round(t_no), with_ms=round(t_yes),
@@ -278,10 +278,12 @@ def bench_geometric_prefilter() -> None:
                             1.5 * t], dim=-1)
 
     def ideal_nc(ca: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        v1 = torch.tensor([0.0, 1.45, 0.0])
-        v2 = torch.tensor([1.52 * math.cos(_IDEAL_NCA_C_RAD),
-                           -1.52 * math.sin(_IDEAL_NCA_C_RAD), 0.0])
-        return ca + v1, ca + v2
+        # N along +x; C at exactly 111 deg from N in the xy-plane.
+        # dot([1,0,0], [cos111,sin111,0]) = cos(111 deg) -> acos = 111 deg.
+        n_dir = torch.tensor([1.0, 0.0, 0.0])
+        c_dir = torch.tensor([math.cos(math.radians(111.0)),
+                               math.sin(math.radians(111.0)), 0.0])
+        return ca + 1.45 * n_dir, ca + 1.52 * c_dir
 
     good_ca = helix_ca(N)
     good_n, good_c = ideal_nc(good_ca)
@@ -306,23 +308,26 @@ def bench_geometric_prefilter() -> None:
     gr = _backbone_angle_penalty(good_n, good_ca, good_c, mask).item()
     br = _backbone_angle_penalty(bad_n,  bad_ca,  bad_c,  mask).item()
 
-    # Good structure: helix has ideal backbone angles, so gr should be near 0
-    # (v1/v2 are computed for the ideal angle, but the check is 111 +/-20 deg)
-    ratio = bc / max(gc, 1e-6)
-
     print(f"  n_residues = {N}")
     print(f"  {'Metric':<24} {'Good (helix)':>14} {'Bad (random)':>14}")
     print(f"  {'-'*52}")
-    print(f"  {'CA clash rate':<24} {gc:>14.4f} {bc:>14.4f}")
-    print(f"  {'Backbone outlier rate':<24} {gr:>14.4f} {br:>14.4f}")
+    print(f"  {'CA clash rate':<24} {gc:>14.1%} {bc:>14.1%}")
+    print(f"  {'Backbone outlier rate':<24} {gr:>14.1%} {br:>14.1%}")
     print(f"  {'Latency (ms/sample)':<24} {t_good:>14.2f} {t_bad:>14.2f}")
+
     fast = t_good < 100 and t_bad < 100
-    print(f"\n  Clash ratio (bad/good): {ratio:.0f}x")
+    good_clash_zero = gc < 1e-4
+    good_rama_low   = gr < 0.05
+    print(f"\n  Good helix CA clashes: {gc:.1%}  (expect 0%): {tick(good_clash_zero)}")
+    print(f"  Good helix backbone outliers: {gr:.1%}  (expect <5%): {tick(good_rama_low)}")
+    print(f"  Bad random CA clashes: {bc:.1%}  Backbone outliers: {br:.1%}")
     print(f"  Both < 100 ms: {tick(fast)}")
 
     RESULTS["geometric_prefilter"] = dict(
-        n_res=N, good_clash=f"{gc:.4f}", bad_clash=f"{bc:.4f}",
-        clash_ratio=f"{ratio:.0f}x", time_ms=f"{t_good:.2f}",
+        n_res=N,
+        good_clash=f"{gc:.1%}", bad_clash=f"{bc:.1%}",
+        good_rama=f"{gr:.1%}",  bad_rama=f"{br:.1%}",
+        time_ms=f"{t_good:.2f}",
     )
 
 
@@ -406,14 +411,15 @@ def bench_sparse_attention() -> None:
     mb_eff  = pair_full.element_size() * int((pair_sparse != 0).sum().item()) / 1e6
     mem_red = 1.0 - mb_eff / mb_full
 
-    print(f"\n  pair_rep memory at [B={B}, N={N}, D={D}]:")
-    print(f"    Full  : {mb_full:.1f} MB")
-    print(f"    Sparse: {mb_eff:.1f} MB effective (non-zero x 4 bytes)")
-    print(f"    Memory reduction: {mem_red:.1%}")
+    print(f"\n  pair_rep at [B={B}, N={N}, D={D}]: {mb_full:.1f} MB (still stored dense).")
+    print(f"  {sparsity_at.get(N, 0):.1%} of pair entries are zeroed by the geometric mask.")
+    print(f"  A sparse attention kernel (block-sparse FlashAttn) would skip those pairs,")
+    print(f"  reducing attention compute + activation memory by ~{mem_red:.0%}.")
+    print(f"  Note: this PR adds the mask -- wiring it into a sparse kernel is a follow-on.")
 
     RESULTS["sparse_attention"] = dict(
         sparsity_256=f"{sparsity_at.get(256, 0):.1%}",
-        mem_reduction=f"{mem_red:.1%}",
+        compute_reduction=f"{mem_red:.1%}",
     )
 
 
@@ -596,9 +602,10 @@ def print_summary() -> None:
         print(f"| Reward cache | Model calls | {r['calls']} |")
 
     r = RESULTS.get("geometric_prefilter", {})
-    if "clash_ratio" in r:
-        print(f"| Geo pre-filter | Clash ratio bad/good | **{r['clash_ratio']}** |")
-        print(f"| Geo pre-filter | Latency / sample | {r['time_ms']} ms (n={r['n_res']}) |")
+    if "good_clash" in r:
+        print(f"| Geo pre-filter | CA clash: good/bad | {r['good_clash']} / **{r['bad_clash']}** |")
+        print(f"| Geo pre-filter | Backbone outliers: good/bad | {r['good_rama']} / {r['bad_rama']} |")
+        print(f"| Geo pre-filter | Latency / sample | **{r['time_ms']} ms** (n={r['n_res']}) |")
 
     r = RESULTS.get("adaptive_branching", {})
     if "reduction" in r:
@@ -607,8 +614,8 @@ def print_summary() -> None:
 
     r = RESULTS.get("sparse_attention", {})
     if "sparsity_256" in r:
-        print(f"| Sparse attention | Sparsity at N=256 | **{r['sparsity_256']}** |")
-        print(f"| Sparse attention | pair_rep memory saved | **{r['mem_reduction']}** |")
+        print(f"| Sparse attention | Pairs masked at N=256 | **{r['sparsity_256']}** |")
+        print(f"| Sparse attention | Attention compute reduction (sparse kernel) | **{r.get('compute_reduction', '?')}** |")
 
     r = RESULTS.get("learnable_schedule", {})
     if "concentration_ratio" in r:
