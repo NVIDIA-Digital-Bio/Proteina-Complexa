@@ -144,11 +144,15 @@ source "$VENV_DIR/.venv/bin/activate"
 echo "      Python: $(which python)"
 
 # ------------------------------------------------------------------------------
-# 3. Install PyTorch with CUDA 12.6
+# 3. Install PyTorch with CUDA 12.8
 # ------------------------------------------------------------------------------
-echo "[3/7] Installing PyTorch 2.7.0 with CUDA 12.6..."
-uv pip install torch==2.7.0+cu126 torchvision torchaudio \
-    --index-url https://download.pytorch.org/whl/cu126
+echo "[3/7] Installing PyTorch 2.7.0 with CUDA 12.8 (Blackwell/B200 sm_100)..."
+# cu128 wheels include sm_100 kernels; cu126 does NOT (B200 -> "no kernel image").
+# Pin torchvision/torchaudio to the versions matching torch 2.7.0 — leaving them
+# unpinned lets uv pull a newer torchaudio (e.g. 2.11.0) whose ABI is incompatible
+# (undefined symbol: torch_library_impl), which crashes `import transformers`/ESMFold.
+uv pip install torch==2.7.0+cu128 torchvision==0.22.0+cu128 torchaudio==2.7.0+cu128 \
+    --index-url https://download.pytorch.org/whl/cu128
 
 # ------------------------------------------------------------------------------
 # 4. Install base dependencies from pyproject.toml
@@ -161,7 +165,7 @@ uv pip install --index-strategy unsafe-best-match -e "$PROJECT_DIR"
 # ------------------------------------------------------------------------------
 echo "[5/7] Installing PyTorch Geometric packages..."
 uv pip install torch_geometric torch_scatter torch_sparse torch_cluster \
-    -f https://data.pyg.org/whl/torch-2.7.0+cu126.html
+    -f https://data.pyg.org/whl/torch-2.7.0+cu128.html
 
 # ------------------------------------------------------------------------------
 # 6. Install Graphein and Atomworks
@@ -185,11 +189,15 @@ if [ "$FULL_INSTALL" = true ]; then
     echo "      -> Installing local colabdesign (community_models/colabdesign)..."
     uv pip install -e "$PROJECT_DIR/community_models/colabdesign"
 
-    echo "      -> JAX with CUDA..."
-    uv pip install jaxlib==0.4.29+cuda12.cudnn91 \
-        -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-    uv pip install "jax[cuda12]==0.4.29" \
-        -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+    echo "      -> JAX with CUDA 12.8 (Blackwell/B200 sm_100)..."
+    # jax 0.4.29 predates Blackwell and cannot target sm_100. jax 0.4.38 is the
+    # closest release to the paper's validated 0.4.29 (same minor, minimal drift
+    # for the AF2 oracle) that runs on B200. The CUDA 12.8 libs come from PyPI
+    # nvidia-* wheels (not the legacy jax_cuda_releases find-links). dm-haiku is
+    # pinned to a version compatible with this jax; the jax.tree_* API removals
+    # are handled by the shim in community_models/colabdesign/__init__.py.
+    uv pip install --index-strategy unsafe-best-match \
+        "jax[cuda12]==0.4.38" "jaxlib==0.4.38" "dm-haiku==0.0.13"
     uv pip install flax==0.9.0 --no-deps
 
     echo "      -> Tmol..."

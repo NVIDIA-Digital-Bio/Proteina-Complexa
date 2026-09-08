@@ -75,7 +75,7 @@ allow-direct-references = true
 
 [tool.uv]
 extra-index-url = [
-    "https://download.pytorch.org/whl/cu126",
+    "https://download.pytorch.org/whl/cu128",
 ]
 # Package configuration - using src/ layout
 # Main package lives in src/proteinfoundation/
