@@ -132,6 +132,46 @@ class ProductSpaceFlowMatcher(L.LightningModule):
         }
         return x_t
 
+    def seed_state(
+        self,
+        clean: dict[str, torch.Tensor],
+        mask: Bool[Tensor, "* n"],
+        ts: dict[str, Float[Tensor, "nsteps + 1"]],
+        start_step: int,
+        device: torch.device | None = None,
+    ) -> dict[str, torch.Tensor]:
+        """Partially-noised product-space state at ``start_step`` from a clean sample — the
+        SDEdit / partial-diffusion analog of :func:`sample_noise` (de-novo init).
+
+        Builds the flow-matching forward marginal at the start step, per channel::
+
+            x_t = (1 - t) * noise + t * clean        t = ts[data_mode][start_step]
+
+        which is exactly the ``t`` :func:`partial_simulation` consumes on its first step
+        (``for step in range(start_step, end_step): t = ts[dm][step]``). Integrating
+        ``partial_simulation`` from ``start_step`` -> ``nsteps`` then yields a *variant* of
+        ``clean`` rather than a de-novo sample. ``start_step`` near ``nsteps`` (t -> 1) stays
+        close to the seed; a smaller ``start_step`` (t -> 0) explores more. There is no
+        physical-Angstrom noise knob -- ``start_step`` (or a ``renoise_frac`` mapped to it)
+        is a unitless schedule index and must be calibrated empirically (Ca-RMSD sweep).
+
+        ``clean`` holds the flow's t=1 endpoints: ``bb_ca`` in **nanometers** (Angstrom * 0.1)
+        and ``local_latents`` in the autoencoder ``mean`` / ``z_latent`` space. Only the
+        *noise* is zero-COM'd (per channel config, inside ``sample_noise``); ``clean`` is used
+        as-is, so the caller's frame is preserved -- place a docked binder in the target frame
+        (do NOT independently zero-COM it) or zero-COM a lone chain to match the noise prior.
+        Self-conditioning state starts empty exactly as in de-novo generation.
+        """
+        n = mask.shape[-1]
+        batch_shape = tuple(mask.shape[:-1])
+        noise = self.sample_noise(n=n, shape=batch_shape, device=device, mask=mask)
+        ones = torch.ones(batch_shape, device=device) if batch_shape else torch.ones((), device=device)
+        t = {
+            data_mode: ts[data_mode][start_step].to(device=device) * ones
+            for data_mode in self.data_modes
+        }
+        return self.interpolate(x_0=noise, x_1=clean, t=t, mask=mask)
+
     def process_batch(self, batch: dict) -> tuple[Tensor, Tensor, tuple, int, torch.dtype]:
         """
         Extracts clean sample, mask, batch size, protein length n, dtype and device

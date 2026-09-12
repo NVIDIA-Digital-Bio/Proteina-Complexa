@@ -92,6 +92,42 @@ class FKSteering(BaseSearch):
                 f"nsteps ({search_ctx.nsteps}); otherwise final samples are partially "
                 f"denoised and rewards are computed on incomplete structures."
             )
+        # ── partial diffusion (SDEdit): optional seed from an existing structure ──
+        # `search.seed` present  -> start the reverse process from a partially-noised copy
+        #   of a real binder (variant generation / refinement) instead of pure noise.
+        # `start_step` (or `renoise_frac`) picks how far back to noise: larger start_step
+        #   (closer to nsteps) stays nearer the seed. See fm.seed_state for the math.
+        seed_cfg = self.inf_cfg.search.get("seed", None)
+        seed_clean = None
+        if seed_cfg is not None:
+            from proteinfoundation.utils.pdb_utils import encode_seed
+
+            if "start_step" in seed_cfg:
+                start_step = int(seed_cfg["start_step"])
+            elif "renoise_frac" in seed_cfg:
+                # unitless mixing fraction -> schedule index; nonlinear per-channel schedules
+                # make this approximate, so prefer explicit start_step and calibrate by Ca-RMSD.
+                start_step = int(round((1.0 - float(seed_cfg["renoise_frac"])) * search_ctx.nsteps))
+            else:
+                raise ValueError("search.seed requires 'start_step' or 'renoise_frac'")
+            if not (0 < start_step < search_ctx.nsteps):
+                raise ValueError(
+                    f"partial-diffusion start_step must be in (0, nsteps={search_ctx.nsteps}); "
+                    f"got {start_step} (0 == pure noise / de novo, nsteps == unchanged seed)"
+                )
+            # re-space checkpoints onto [start_step, nsteps] so FK still resamples,
+            # but the trajectory begins mid-way (end stays nsteps, validated above).
+            step_checkpoints = [start_step] + [c for c in step_checkpoints if c > start_step]
+            if step_checkpoints[-1] != search_ctx.nsteps:
+                step_checkpoints.append(search_ctx.nsteps)
+            seed_clean = encode_seed(
+                self.proteina.autoencoder,
+                pdb_path=seed_cfg["pdb_path"],
+                chain=seed_cfg.get("chain", None),
+                target_chain=seed_cfg.get("target_chain", None),  # align seed to target-centered frame
+                device=search_ctx.device,
+            )
+
         n_steps_total = len(step_checkpoints) - 1
 
         # ── initialise noise + tags ─────────────────────────────────────
@@ -101,14 +137,36 @@ class FKSteering(BaseSearch):
             f"[FKSteering] Starting | nsamples={nsamples}, "
             f"beam_width={beam_width}, n_branch={n_branch}, "
             f"temperature={temperature}, checkpoints={step_checkpoints}"
+            + (f", SEED start_step={step_checkpoints[0]}" if seed_clean is not None else "")
         )
         mask = init_mask.repeat_interleave(beam_width, dim=0)
-        xt = self.proteina.fm.sample_noise(
-            n,
-            shape=(nsamples * beam_width,),
-            device=search_ctx.device,
-            mask=mask,
-        )
+        if seed_clean is None:
+            xt = self.proteina.fm.sample_noise(
+                n,
+                shape=(nsamples * beam_width,),
+                device=search_ctx.device,
+                mask=mask,
+            )
+        else:
+            # broadcast the single seed to every replica, then noise to start_step
+            total = nsamples * beam_width
+            for k, v in seed_clean.items():
+                if v.shape[-2] != n:
+                    raise ValueError(
+                        f"seed channel '{k}' has {v.shape[-2]} residues but the binder mask "
+                        f"has n={n}; the seed structure must match the requested binder length"
+                    )
+            clean = {
+                k: v.to(search_ctx.device)[None].expand(total, *v.shape).contiguous()
+                for k, v in seed_clean.items()
+            }
+            xt = self.proteina.fm.seed_state(
+                clean=clean,
+                mask=mask,
+                ts=search_ctx.ts,
+                start_step=step_checkpoints[0],
+                device=search_ctx.device,
+            )
         x_1_pred = None
         metadata_tags = make_initial_search_tags("fk", nsamples, beam_width)
 

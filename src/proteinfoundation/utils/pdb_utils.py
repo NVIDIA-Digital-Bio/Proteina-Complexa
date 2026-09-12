@@ -581,3 +581,101 @@ def load_target_from_pdb(target_spec, pdb_path, target_hotspots=None, convert_an
         target_hotspots_mask,
         target_chain,
     )
+
+
+def encode_seed(
+    autoencoder,
+    pdb_path: str,
+    chain: str | None = None,
+    target_chain: str | None = None,
+    device=None,
+) -> dict:
+    """Encode a protein chain into a clean product-space seed for partial diffusion (SDEdit).
+
+    Returns a ``dict`` ready for ``ProductSpaceFlowMatcher.seed_state``::
+
+        {"bb_ca": [n, 3] Ca coords in NANOMETERS, "local_latents": [n, latent_dim]}
+
+    ``bb_ca`` and ``local_latents`` are the flow's t=1 endpoints: the decoder maps the
+    generated ``local_latents`` back to structure, and the encoder ``mean`` here is the
+    deterministic point in that same latent space, so seeding is space-consistent. The
+    deterministic ``mean`` (not the reparameterized ``z_latent`` sample) is used so the seed
+    is reproducible.
+
+    Frame (docked pose): during generation the *target* is centered on its CA centre-of-mass
+    (:class:`CoordsTensorCenteringTransform`, ``data_mode="bb_ca"``), so a seed binder left in
+    its raw PDB frame would be mis-placed relative to the centered target. Pass ``target_chain``
+    (the target chain in *this* pdb -- e.g. the complex the binder was docked in): the binder
+    is then shifted into that same target-CA-COM frame, so the docked pose is preserved by
+    default. The latent is translation-invariant, so only ``bb_ca`` is shifted. If
+    ``target_chain`` is None the binder is returned in its own frame and a warning is emitted --
+    fine for *unconditioned* SDEdit, but for target-conditioned generation the docked pose may
+    drift unless an epitope/contact constraint re-docks it.
+
+    The encoder's ``FeatureFactory`` runs with ``strict_feats: False``; the load-bearing batch
+    keys are the clean atom37 coords (A and nm), the atom mask and the residue types.
+    """
+    import torch
+
+    from proteinfoundation.utils.coors_utils import ang_to_nm
+
+    target_spec = chain if chain is not None else "A"
+    # Angstrom coords -> the feature factory reads both `coords` (A, for bb/sidechain
+    # angles) and `coords_nm` (nm, for a37coors + pair dists).
+    atom_mask, coords_ang, residue_type, _, _ = load_target_from_pdb(
+        target_spec=target_spec, pdb_path=pdb_path, convert_ang_to_nm=False
+    )
+    n = residue_type.shape[0]
+    dev = device if device is not None else next(autoencoder.parameters()).device
+
+    coords_ang = coords_ang.to(dev).float()          # [n, 37, 3], Angstrom
+    coords_nm = ang_to_nm(coords_ang)                 # [n, 37, 3], nm (repo's exact conversion)
+    atom_mask = atom_mask.to(dev)                     # [n, 37] bool
+    residue_type = residue_type.to(dev).long()        # [n]
+    resmask = torch.ones(1, n, dtype=torch.bool, device=dev)  # [1, n] no padding (single chain)
+
+    # AF2 atom37 layout: index 1 is CA.
+    ca_nm = coords_nm[:, 1, :]                         # [n, 3], nm
+
+    # Full batch matching what the encoder's FeatureFactory reads (nn_130m feats).
+    batch = {
+        "coords": coords_ang[None],                   # [1, n, 37, 3] Angstrom  (bb/sidechain angles)
+        "coords_nm": coords_nm[None],                 # [1, n, 37, 3] nm        (a37coors_nm, pair dists)
+        "coord_mask": atom_mask[None],                # [1, n, 37]
+        "ca_coors_nm": ca_nm[None],                   # [1, n, 3]
+        "residue_type": residue_type[None],           # [1, n]
+        "residue_pdb_idx": torch.arange(n, device=dev)[None],  # [1, n] contiguous
+        "mask": resmask,                              # [1, n]
+        "mask_dict": {                                # feats index these sub-keys directly
+            "residue_type": resmask,                  # [1, n] padding mask (ResidueTypeSeqFeat)
+            "coords": atom_mask[None, ..., None].expand(1, n, 37, 3),  # [1, n, 37, 3]
+        },
+    }
+
+    autoencoder.eval()
+    with torch.no_grad():
+        out = autoencoder.encode(batch)               # {"mean", "log_scale", "z_latent"}
+    latents = out["mean"][0]                           # [n, latent_dim], deterministic (translation-invariant)
+
+    # Place the binder in the target's centered frame so the docked pose survives, matching
+    # CoordsTensorCenteringTransform(data_mode="bb_ca") applied to the target at generation time.
+    if target_chain is not None:
+        from proteinfoundation.utils.align_utils import mean_w_mask
+
+        t_mask, t_ang, _, _, _ = load_target_from_pdb(
+            target_spec=target_chain, pdb_path=pdb_path, convert_ang_to_nm=False
+        )
+        t_ca_nm = ang_to_nm(t_ang.to(dev).float())[:, 1, :]          # [nt, 3] target CA, nm
+        t_ca_mask = t_mask.to(dev)[:, 1]                             # [nt] CA present
+        com = mean_w_mask(t_ca_nm, t_ca_mask, keepdim=False).reshape(3)  # target CA centre-of-mass
+        ca_nm = ca_nm - com                                         # shift binder into target-CA-COM frame
+    else:
+        from loguru import logger
+
+        logger.warning(
+            "encode_seed: no target_chain given -> seed binder kept in its own PDB frame. "
+            "For target-conditioned generation the docked pose may be inconsistent with the "
+            "centered target; pass target_chain (the target chain in this pdb) to auto-align."
+        )
+
+    return {"bb_ca": ca_nm, "local_latents": latents}
